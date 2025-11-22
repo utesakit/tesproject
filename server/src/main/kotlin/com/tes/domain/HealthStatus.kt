@@ -14,4 +14,4 @@ data class HealthStatus(
     val status: String,
     val message: String,
     val uptimeSeconds: Long
-)
+) //t
