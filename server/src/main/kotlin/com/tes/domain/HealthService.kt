@@ -16,4 +16,4 @@ class HealthService(
     fun getHealth(uptime: Long): HealthStatus {
         return repository.getHealth(uptime)
     }
-} //t
+}

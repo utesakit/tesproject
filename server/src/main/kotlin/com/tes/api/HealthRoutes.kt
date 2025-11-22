@@ -1,9 +1,11 @@
 package com.tes.api
 
 import com.tes.domain.HealthService
+
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+
 import java.time.Duration
 import java.time.Instant
 
@@ -28,4 +30,4 @@ fun Route.healthRoutes(
         // Ktor + kotlinx.serialization will automatically turn this into JSON.
         call.respond(health)
     }
-} //t
+}
