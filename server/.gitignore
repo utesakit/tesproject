@@ -1,0 +1,20 @@
+# Gradle
+.gradle/
+build/
+**/build/
+
+# IntelliJ / IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Kotlin / Compiler
+.kotlinc/
+
+# Sonstige Build-Outputs
+out/
+
+# Betriebssystem-Zeug
+.DS_Store
+Thumbs.db
