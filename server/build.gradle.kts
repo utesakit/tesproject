@@ -18,29 +18,29 @@ dependencies {
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
 
-    // Logging
-    implementation("ch.qos.logback:logback-classic:1.5.6")
-
-    // Database Support
-    implementation("org.ktorm:ktorm-core:${ktormVersion}")
-    implementation("org.postgresql:postgresql:${postgresDriverVersion}")
-
-    // Auth + JWT
-    // implementation("io.ktor:ktor-server-auth-jvm:${ktorVersion}")
-    // implementation("io.ktor:ktor-server-auth-jwt-jvm:${ktorVersion}")
-
-    // Testing
-    // testImplementation(kotlin("test"))
-    // testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
-    // testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
-
     // Ktor JSON-Serialization (kotlinx.serialization)
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3") // optional
 
+    // Logging
+    implementation("ch.qos.logback:logback-classic:1.5.6")
+
+    // PostgreSQL Database Support
+    // implementation("org.ktorm:ktorm-core:${ktormVersion}")
+    // implementation("org.postgresql:postgresql:${postgresDriverVersion}")
+
+    // Auth + JWT
+    // implementation("io.ktor:ktor-server-auth-jvm:${ktorVersion}")
+    // implementation("io.ktor:ktor-server-auth-jwt-jvm:${ktorVersion}")
+
     // Passwort-Hashing (BCrypt)
     // implementation("org.mindrot:jbcrypt:0.4")
+
+    // Testing
+    // testImplementation(kotlin("test"))
+    // testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
+    // testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
 }
 
 application {

@@ -43,7 +43,7 @@ fun Application.module() {
         )
     }
 
-    val healthRepo = InMemoryHealthRepository()
+    val healthRepo = InMemoryHealthRepository() // creates health-data repository (no real DB)
     val healthService = HealthService(healthRepo)
 
     routing {
