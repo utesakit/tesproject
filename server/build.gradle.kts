@@ -27,8 +27,9 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.5.6")
 
     // PostgreSQL Database Support
-    // implementation("org.ktorm:ktorm-core:${ktormVersion}")
-    // implementation("org.postgresql:postgresql:${postgresDriverVersion}")
+    implementation("org.ktorm:ktorm-core:${ktormVersion}")
+    // implementation("org.ktorm:ktorm-support-postgresql:${ktormVersion}")
+    implementation("org.postgresql:postgresql:${postgresDriverVersion}")
 
     // Auth + JWT
     // implementation("io.ktor:ktor-server-auth-jvm:${ktorVersion}")

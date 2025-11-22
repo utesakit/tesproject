@@ -1,0 +1,19 @@
+### Registrieren
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Max",
+  "lastName": "Mustermann",
+  "email": "max@example.de",
+  "password": "geheim123"
+}
+
+### Login
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "email": "max@example.com",
+  "password": "geheim123"
+}
