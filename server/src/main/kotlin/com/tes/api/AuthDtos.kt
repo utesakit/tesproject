@@ -2,6 +2,8 @@ package com.tes.api
 
 import kotlinx.serialization.Serializable
 
+// TODO: Name von AuthDtos ändern
+
 /**
  * Request body for user registration.
  */

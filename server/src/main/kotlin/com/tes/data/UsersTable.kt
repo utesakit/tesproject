@@ -3,7 +3,7 @@ package com.tes.data
 import org.ktorm.schema.*
 
 /**
- * Ktorm mapping for the "users" table.
+ * Ktorm ORM mapping for the "users" table.
  * Column names must exactly match the CREATE TABLE definition.
  */
 object UsersTable : Table<Nothing>("users") {
