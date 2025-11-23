@@ -3,7 +3,7 @@
 ## Project Structure
 
 ```text
-com/tes
+server/src/main/kotlin/com/tes
 ├── Application.kt              # Ktor server setup and main entry point
 │
 ├── api
