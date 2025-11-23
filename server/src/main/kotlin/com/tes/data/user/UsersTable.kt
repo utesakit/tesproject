@@ -16,3 +16,4 @@ object UsersTable : Table<Nothing>("users") {
     val email = varchar("email")                // users email address (unique)
     val passwordHash = varchar("password_hash") // hashed user password (not yet)
 }
+

@@ -31,7 +31,6 @@ Die Gruppen-Endpunkte testest man über `group-test.http` im Ordner `test`.
 Dort sind typische Operationen abgedeckt: Gruppen erstellen, per Einladungscode beitreten, Mitglieder entfernen, Gruppen verlassen und Gruppen löschen.
 
 ## Project Structure as 23.11.2025 18:00
-
 ```text
 server/
 ├── build.gradle.kts                      # Gradle build config for the Ktor server module

@@ -4,10 +4,10 @@
 @baseUrl = http://localhost:8080
 
 # After login, paste the accessToken of "Anna" here
-@adminToken = PUT_IN
+@adminToken = PUT_IN_YOUR_TOKEN
 
 # After login, paste the accessToken of "Tom" here
-@memberToken = PUT_IN
+@memberToken = PUT_IN_YOUR_TOKEN
 
 
 
