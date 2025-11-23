@@ -1,7 +1,7 @@
 package com.tes.api.auth
 
-import com.tes.data.shared.UserMapper
-import com.tes.data.shared.UserRepository
+import com.tes.data.user.UserMapper
+import com.tes.data.user.UserRepository
 import com.tes.domain.auth.AuthService
 import com.tes.domain.auth.AuthenticationException
 import com.tes.domain.auth.EmailAlreadyExistsException
@@ -36,18 +36,28 @@ fun Route.authRoutes(authService: AuthService, userRepository: UserRepository) {
             // Check that the email address is not already in use.
             authService.checkEmailAvailability(request.email)
 
-            // Create user in the database. (TODO: hash password before storing)
+            // Hash the raw password before saving it to the database
+            val passwordHash = authService.hashPassword(request.password)
+
+            // Create user in the database with hashed password.
             val user = userRepository.createUser(
                 firstName = request.firstName,
                 lastName = request.lastName,
                 email = request.email,
-                passwordHash = request.password
+                passwordHash = passwordHash
             )
 
-            // Return the created user (without password) to the client.
+            // Generate a fresh access/refresh token pair for the new user
+            val (accessToken, refreshToken) = authService.generateTokens(user)
+
+            // Respond with 201 Created and return tokens plus user information as JSON
             call.respond(
                 HttpStatusCode.Created,
-                UserMapper.toResponse(user)
+                AuthResponse(
+                    accessToken = accessToken,
+                    refreshToken = refreshToken,
+                    user = UserMapper.toResponse(user)
+                )
             )
         } catch (e: ValidationException) {
             call.respond(
@@ -75,11 +85,17 @@ fun Route.authRoutes(authService: AuthService, userRepository: UserRepository) {
             // Authenticate user based on email and password.
             val user = authService.authenticate(request.email, request.password)
 
-            // For now just send a simple success message.
-            // TODO: Later this can return a JWT and user data.
+            // Generate a new access/refresh token pair for the authenticated user
+            val (accessToken, refreshToken) = authService.generateTokens(user)
+
+            // Respond with 200 OK and return tokens plus user information as JSON
             call.respond(
                 HttpStatusCode.OK,
-                MessageResponse("Login successful for ${user.email}.")
+                AuthResponse(
+                    accessToken = accessToken,
+                    refreshToken = refreshToken,
+                    user = UserMapper.toResponse(user)
+                )
             )
         } catch (e: AuthenticationException) {
             call.respond(
@@ -91,6 +107,35 @@ fun Route.authRoutes(authService: AuthService, userRepository: UserRepository) {
             call.respond(
                 HttpStatusCode.InternalServerError,
                 MessageResponse("Internal server error during login.")
+            )
+        }
+    }
+
+    post("/auth/refresh") {
+        try {
+            val request = call.receive<RefreshTokenRequest>()
+
+            // Refresh the token pair using the provided refresh token
+            val (accessToken, refreshToken) = authService.refreshTokens(request.refreshToken)
+
+            // Respond with 200 OK and return the new token pair as JSON
+            call.respond(
+                HttpStatusCode.OK,
+                RefreshTokenResponse(
+                    accessToken = accessToken,
+                    refreshToken = refreshToken
+                )
+            )
+        } catch (e: AuthenticationException) {
+            call.respond(
+                HttpStatusCode.Unauthorized,
+                MessageResponse(e.message ?: "Token refresh failed.")
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            call.respond(
+                HttpStatusCode.InternalServerError,
+                MessageResponse("Internal server error during token refresh.")
             )
         }
     }

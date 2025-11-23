@@ -10,12 +10,13 @@ object DatabaseInitializer {
 
     /**
      * Ensures that the database schema is present.
-     * Currently this creates the "users" table if it does not already exist.
+     * Creates the "users" and "refresh_tokens" tables if they do not already exist.
      * @param database Active database connection used to run the DDL statements.
      */
     fun initDatabase(database: Database) {
         database.useConnection { connection ->
             connection.createStatement().use { statement ->
+                // Create users table if it does not exist yet
                 statement.executeUpdate(
                     """
                     CREATE TABLE IF NOT EXISTS users (
@@ -25,6 +26,25 @@ object DatabaseInitializer {
                         email         VARCHAR(255) UNIQUE NOT NULL,
                         password_hash VARCHAR(255) NOT NULL
                     );
+                    """.trimIndent()
+                )
+
+                // Create refresh_tokens table if it does not exist yet
+                statement.executeUpdate(
+                    """
+                    CREATE TABLE IF NOT EXISTS refresh_tokens (
+                        id      SERIAL PRIMARY KEY,
+                        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                        token   VARCHAR(500) UNIQUE NOT NULL
+                    );
+                    """.trimIndent()
+                )
+
+                // Create index on user_id for fast lookups by user (TODO: not so important)
+                statement.executeUpdate(
+                    """
+                    CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id 
+                    ON refresh_tokens(user_id);
                     """.trimIndent()
                 )
             }

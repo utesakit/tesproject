@@ -1,14 +1,19 @@
 package com.tes.domain.auth
 
-import com.tes.data.shared.UserRepository
-import com.tes.domain.shared.User
+import com.tes.data.auth.RefreshTokenRepository
+import com.tes.data.user.UserRepository
+import com.tes.domain.user.User
+import org.mindrot.jbcrypt.BCrypt
 
 /**
  * Provides authentication-related business logic.
- * Handles validation of registration data, checks email availability and verifies user credentials during login.
+ * Handles validation of registration data, checks email availability, verifies user credentials,
+ * password hashing and JWT token generation.
  */
 class AuthService(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val tokenService: TokenService,
+    private val refreshTokenRepository: RefreshTokenRepository
 ) {
 
     /**
@@ -52,8 +57,9 @@ class AuthService(
 
     /**
      * Authenticates a user with email and password.
+     * Verifies the password using BCrypt hashing.
      * @param email Users email address
-     * @param password Users password
+     * @param password Users password (plain text)
      * @return The authenticated [User] instance.
      * @throws AuthenticationException If the email is unknown or the password is incorrect.
      */
@@ -61,12 +67,73 @@ class AuthService(
         val user = userRepository.findByEmail(email)
             ?: throw AuthenticationException("Email or password is incorrect.")
 
-        // TODO: Replace with proper password hashing comparison
-        if (user.passwordHash != password) {
+        // Verify password using BCrypt
+        if (!BCrypt.checkpw(password, user.passwordHash)) {
             throw AuthenticationException("Email or password is incorrect.")
         }
 
         return user
+    }
+
+    /**
+     * Hashes a plain text password using BCrypt.
+     * @param password Plain text password to hash.
+     * @return BCrypt hashed password string.
+     */
+    fun hashPassword(password: String): String {
+        return BCrypt.hashpw(password, BCrypt.gensalt())
+    }
+
+    /**
+     * Generates access and refresh tokens for an authenticated user.
+     * Stores the refresh token in the database for later validation.
+     * @param user Authenticated user which tokens should be generated.
+     * @return Pair of (accessToken, refreshToken).
+     */
+    fun generateTokens(user: User): Pair<String, String> {
+        val accessToken = tokenService.generateAccessToken(user.id, user.email)
+        val refreshToken = tokenService.generateRefreshToken(user.id)
+
+        // Store refresh token in database
+        refreshTokenRepository.saveToken(user.id, refreshToken)
+
+        return Pair(accessToken, refreshToken)
+    }
+
+    /**
+     * Refreshes an access token using a valid refresh token.
+     * Validates the refresh token & checks if it exists in the database
+     * and generates a new access/refresh token pair.
+     * @param refreshToken The refresh token to use for renewal.
+     * @return Pair of (accessToken, refreshToken) if successful.
+     * @throws AuthenticationException If the refresh token is invalid or not found.
+     */
+    fun refreshTokens(refreshToken: String): Pair<String, String> {
+        // Validate refresh token JWT
+        val userId = tokenService.validateRefreshToken(refreshToken)
+            ?: throw AuthenticationException("Invalid refresh token.")
+
+        // Verify token exists in database
+        val storedUserId = refreshTokenRepository.findUserIdByToken(refreshToken)
+            ?: throw AuthenticationException("Refresh token not found or expired.")
+
+        if (userId != storedUserId) {
+            throw AuthenticationException("Token mismatch.")
+        }
+
+        // Get user data by ID
+        val user = userRepository.findById(userId)
+            ?: throw AuthenticationException("User not found.")
+
+        // Delete old refresh token (one-time use)
+        refreshTokenRepository.deleteToken(refreshToken)
+
+        // Generate new token pair
+        val accessToken = tokenService.generateAccessToken(user.id, user.email)
+        val newRefreshToken = tokenService.generateRefreshToken(user.id)
+        refreshTokenRepository.saveToken(user.id, newRefreshToken)
+
+        return Pair(accessToken, newRefreshToken)
     }
 
     /**
@@ -93,4 +160,3 @@ class EmailAlreadyExistsException(message: String) : Exception(message)
  * Thrown when authentication of a user fails.
  */
 class AuthenticationException(message: String) : Exception(message)
-

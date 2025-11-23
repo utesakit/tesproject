@@ -1,7 +1,7 @@
-package com.tes.data.shared
+package com.tes.data.user
 
 import com.tes.api.auth.UserResponse
-import com.tes.domain.shared.User
+import com.tes.domain.user.User
 import org.ktorm.dsl.QueryRowSet
 
 /**

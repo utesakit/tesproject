@@ -41,3 +41,31 @@ data class UserResponse(
 data class MessageResponse(
     val message: String     // (error) message
 )
+
+/**
+ * Response returned after successful login or registration.
+ * Contains access token, refresh token and user information.
+ */
+@Serializable
+data class AuthResponse(
+    val accessToken: String,   // JWT access token (short-lived)
+    val refreshToken: String,  // JWT refresh token (long-lived)
+    val user: UserResponse     // User information
+)
+
+/**
+ * Request body for refreshing an access token.
+ */
+@Serializable
+data class RefreshTokenRequest(
+    val refreshToken: String  // Refresh token to use for renewal
+)
+
+/**
+ * Response returned after successful token refresh.
+ */
+@Serializable
+data class RefreshTokenResponse(
+    val accessToken: String,   // New JWT access token
+    val refreshToken: String  // New JWT refresh token
+)

@@ -1,4 +1,4 @@
-package com.tes.data.shared
+package com.tes.data.user
 
 import org.ktorm.schema.Table
 import org.ktorm.schema.int

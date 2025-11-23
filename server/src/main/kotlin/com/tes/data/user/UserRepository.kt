@@ -1,6 +1,6 @@
-package com.tes.data.shared
+package com.tes.data.user
 
-import com.tes.domain.shared.User
+import com.tes.domain.user.User
 
 /**
  * Repository abstraction for accessing and storing user data.
@@ -28,4 +28,11 @@ interface UserRepository {
      * @return The matching [User] if found or "null" if no user exists for this email.
      */
     fun findByEmail(email: String): User?
+
+    /**
+     * Looks up a user by ID.
+     * @param id User ID to search for.
+     * @return The matching [User] if found or "null" if no user exists with this ID.
+     */
+    fun findById(id: Int): User?
 }

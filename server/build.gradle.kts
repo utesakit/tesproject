@@ -32,11 +32,12 @@ dependencies {
     implementation("org.postgresql:postgresql:${postgresDriverVersion}")
 
     // Auth + JWT
-    // implementation("io.ktor:ktor-server-auth-jvm:${ktorVersion}")
-    // implementation("io.ktor:ktor-server-auth-jwt-jvm:${ktorVersion}")
+    implementation("io.ktor:ktor-server-auth-jvm:${ktorVersion}")
+    implementation("io.ktor:ktor-server-auth-jwt-jvm:${ktorVersion}")
+    implementation("com.auth0:java-jwt:4.4.0")
 
-    // Passwort-Hashing (BCrypt)
-    // implementation("org.mindrot:jbcrypt:0.4")
+    // Password Hashing (BCrypt)
+    implementation("org.mindrot:jbcrypt:0.4")
 
     // Testing
     // testImplementation(kotlin("test"))

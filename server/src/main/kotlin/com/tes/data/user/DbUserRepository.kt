@@ -1,6 +1,6 @@
-package com.tes.data.shared
+package com.tes.data.user
 
-import com.tes.domain.shared.User
+import com.tes.domain.user.User
 import org.ktorm.database.Database
 import org.ktorm.dsl.eq
 import org.ktorm.dsl.from
@@ -61,6 +61,20 @@ class DbUserRepository(
             .from(UsersTable)
             .select()
             .where { UsersTable.email eq email }
+            .map { UserMapper.fromRow(it) }
+            .firstOrNull()
+    }
+
+    /**
+     * Retrieves a user by ID if it exists.
+     * @param id User ID to search for.
+     * @return The matching [User], or "null" if no user with this ID exists.
+     */
+    override fun findById(id: Int): User? {
+        return database
+            .from(UsersTable)
+            .select()
+            .where { UsersTable.id eq id }
             .map { UserMapper.fromRow(it) }
             .firstOrNull()
     }

@@ -1,4 +1,4 @@
-package com.tes.domain.shared
+package com.tes.domain.user
 
 /**
  * Represents a registered user.
