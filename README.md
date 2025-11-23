@@ -8,7 +8,7 @@ server/src/main/kotlin/com/tes
 │
 ├── api
 │   ├── auth
-│   │   ├── AuthRoutes.kt       # /auth/register, /auth/login
+│   │   ├── AuthRoutes.kt       # /auth/register, /auth/login endpoint
 │   │   └── AuthDtos.kt         # RegisterRequest, LoginRequest, UserResponse, MessageResponse
 │   │
 │   └── health
