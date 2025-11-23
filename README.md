@@ -30,6 +30,7 @@ Beim Registrierein/Einloggen erhält man JWT Access- und Refresh-Tokens, die man
 Die Gruppen-Endpunkte testest man über `group-test.http` im Ordner `test`.  
 Dort sind typische Operationen abgedeckt: Gruppen erstellen, per Einladungscode beitreten, Mitglieder entfernen, Gruppen verlassen und Gruppen löschen.
 
+### API-Dokumentation: https://app.swaggerhub.com/apis/germany-b19/TES1/1.0.0
 
 ## Dependencies [aktualisiert 23.11.2025]
 ```text
