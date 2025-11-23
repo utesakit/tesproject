@@ -17,61 +17,30 @@ class DbUserRepository(
         email: String,
         passwordHash: String
     ): User {
-
-        return try {
-            // Insert new user into the database
-            database.insert(UsersTable) {
-                set(UsersTable.firstName, firstName)
-                set(UsersTable.lastName, lastName)
-                set(UsersTable.email, email)
-                set(UsersTable.passwordHash, passwordHash)
-            }
-
-            // Load the inserted user by email
-            database
-                .from(UsersTable)
-                .select()
-                .where { UsersTable.email eq email }
-                .map { row ->
-                    User(
-                        id = row[UsersTable.id]!!,
-                        firstName = row[UsersTable.firstName]!!,
-                        lastName = row[UsersTable.lastName]!!,
-                        email = row[UsersTable.email]!!,
-                        passwordHash = row[UsersTable.passwordHash]!!
-                    )
-                }
-                .firstOrNull()
-                ?: error("User could not be loaded after insert.")
-        } catch (e: Exception) {
-            // Log and rethrow the exception
-            e.printStackTrace()
-            throw e
+        // Insert new user into the database
+        database.insert(UsersTable) {
+            set(UsersTable.firstName, firstName)
+            set(UsersTable.lastName, lastName)
+            set(UsersTable.email, email)
+            set(UsersTable.passwordHash, passwordHash)
         }
+
+        // Load the inserted user by email
+        return database
+            .from(UsersTable)
+            .select()
+            .where { UsersTable.email eq email }
+            .map { UserMapper.fromRow(it) }
+            .firstOrNull()
+            ?: throw IllegalStateException("User could not be loaded after insert.")
     }
 
     override fun findByEmail(email: String): User? {
-
-        return try {
-            // Find the first user with the given email
-            database
-                .from(UsersTable)
-                .select()
-                .where { UsersTable.email eq email }
-                .map { row ->
-                    User(
-                        id = row[UsersTable.id]!!,
-                        firstName = row[UsersTable.firstName]!!,
-                        lastName = row[UsersTable.lastName]!!,
-                        email = row[UsersTable.email]!!,
-                        passwordHash = row[UsersTable.passwordHash]!!
-                    )
-                }
-                .firstOrNull()
-        } catch (e: Exception) {
-            // Log and rethrow the exception
-            e.printStackTrace()
-            throw e
-        }
+        return database
+            .from(UsersTable)
+            .select()
+            .where { UsersTable.email eq email }
+            .map { UserMapper.fromRow(it) }
+            .firstOrNull()
     }
 }

@@ -8,9 +8,9 @@ import org.ktorm.schema.*
  */
 object UsersTable : Table<Nothing>("users") {
 
-    val id = int("id").primaryKey()          // primary key of the user
-    val firstName = varchar("first_name")    // users first name
-    val lastName = varchar("last_name")      // users last name
-    val email = varchar("email")             // users email address (unique)
+    val id = int("id").primaryKey()             // primary key of the user
+    val firstName = varchar("first_name")       // users first name
+    val lastName = varchar("last_name")         // users last name
+    val email = varchar("email")                // users email address (unique)
     val passwordHash = varchar("password_hash") // hashed user password (not yet)
 }

@@ -6,11 +6,12 @@ package com.tes.domain
 class HealthService {
 
     /**
-     * Returns the health status.
+     * Returns the health status of the server.
      * @param uptime the server uptime in seconds
+     * @return the current health status
      */
-    fun getHealth(uptime: Long): HealthStatus {
-        return HealthStatus(
+    fun getHealth(uptime: Long): Health {
+        return Health(
             status = "ok",
             message = "Server is alive",
             uptimeSeconds = uptime

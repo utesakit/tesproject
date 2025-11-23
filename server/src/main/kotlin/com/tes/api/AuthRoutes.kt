@@ -1,7 +1,8 @@
 package com.tes.api
 
+import com.tes.data.UserMapper
 import com.tes.data.UserRepository
-import com.tes.domain.User
+import com.tes.domain.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -9,40 +10,27 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 /**
- * Simple test routes for registration and login.
- * Currently without password hashing / JWT => only for testing DB integration!
+ * HTTP routes for user authentication (registration and login).
+ * Delegates business logic to AuthService.
  */
-fun Route.authRoutes(userRepository: UserRepository) {
+fun Route.authRoutes(authService: AuthService, userRepository: UserRepository) {
 
     post("/auth/register") {
         try {
-            // Parse JSON body into RegisterRequest
             val request = call.receive<RegisterRequest>()
 
-            // Basic validation: all fields must be non-empty
-            if (request.firstName.isBlank() ||
-                request.lastName.isBlank() ||
-                request.email.isBlank() ||
-                request.password.isBlank()
-            ) {
-                call.respond(
-                    HttpStatusCode.BadRequest,
-                    MessageResponse("All fields must be non-empty.")
-                )
-                return@post
-            }
+            // Validate registration data
+            authService.validateRegistration(
+                firstName = request.firstName,
+                lastName = request.lastName,
+                email = request.email,
+                password = request.password
+            )
 
-            // Check if email is already registered
-            val existing = userRepository.findByEmail(request.email)
-            if (existing != null) {
-                call.respond(
-                    HttpStatusCode.Conflict,
-                    MessageResponse("Email is already registered.")
-                )
-                return@post
-            }
+            // Check email availability
+            authService.checkEmailAvailability(request.email)
 
-            // For testing: store password in plain text => will be hashed later?
+            // Create user (TODO: hash password before storing)
             val user = userRepository.createUser(
                 firstName = request.firstName,
                 lastName = request.lastName,
@@ -50,10 +38,19 @@ fun Route.authRoutes(userRepository: UserRepository) {
                 passwordHash = request.password
             )
 
-            // Return created user without password
             call.respond(
                 HttpStatusCode.Created,
-                user.toResponse()
+                UserMapper.toResponse(user)
+            )
+        } catch (e: ValidationException) {
+            call.respond(
+                HttpStatusCode.BadRequest,
+                MessageResponse(e.message ?: "Validation failed.")
+            )
+        } catch (e: EmailAlreadyExistsException) {
+            call.respond(
+                HttpStatusCode.Conflict,
+                MessageResponse(e.message ?: "Email is already registered.")
             )
         } catch (e: Exception) {
             e.printStackTrace()
@@ -66,25 +63,19 @@ fun Route.authRoutes(userRepository: UserRepository) {
 
     post("/auth/login") {
         try {
-            // Parse JSON body into LoginRequest
             val request = call.receive<LoginRequest>()
 
-            // Look up user by email
-            val user = userRepository.findByEmail(request.email)
+            // Authenticate user
+            val user = authService.authenticate(request.email, request.password)
 
-            // Validate credentials => plain-text comparison for now?
-            if (user == null || user.passwordHash != request.password) {
-                call.respond(
-                    HttpStatusCode.Unauthorized,
-                    MessageResponse("Email or password is incorrect.")
-                )
-                return@post
-            }
-
-            // Login successful
             call.respond(
                 HttpStatusCode.OK,
                 MessageResponse("Login successful for ${user.email}.")
+            )
+        } catch (e: AuthenticationException) {
+            call.respond(
+                HttpStatusCode.Unauthorized,
+                MessageResponse(e.message ?: "Authentication failed.")
             )
         } catch (e: Exception) {
             e.printStackTrace()
@@ -95,14 +86,3 @@ fun Route.authRoutes(userRepository: UserRepository) {
         }
     }
 }
-
-/**
- * Maps a domain User to a response DTO without the password.
- */
-private fun User.toResponse(): UserResponse =
-    UserResponse(
-        id = id,
-        firstName = firstName,
-        lastName = lastName,
-        email = email
-    )
