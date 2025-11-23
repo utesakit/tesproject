@@ -99,8 +99,9 @@ server/
             └── User.kt                   # Domain model for users
             
 debian/
-└── Caddyfile                           # Example Caddy config (reverse proxy → Ktor backend)
+└── Caddyfile                             # Example Caddy config (reverse proxy → Ktor backend)
 
 test/
-└── auth-test.http                      # HTTP client script for testing auth endpoints
+├── auth-test.http                        # HTTP client script for testing auth endpoints
+└── group-test.http                       # HTTP client script for testing group endpoints
 ```
