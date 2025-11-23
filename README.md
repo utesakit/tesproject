@@ -31,7 +31,7 @@ Die Gruppen-Endpunkte testest man über `group-test.http` im Ordner `test`.
 Dort sind typische Operationen abgedeckt: Gruppen erstellen, per Einladungscode beitreten, Mitglieder entfernen, Gruppen verlassen und Gruppen löschen.
 
 
-## Dependencies
+## Dependencies [geupdated 23.11.2025]
 ```text
 dependencies/
 ├── io.ktor:ktor-server-core-jvm:$ktorVersion                 # Basis-Ktor-APIs (Routing, Request/Response)
@@ -53,7 +53,7 @@ dependencies/
 └── org.mindrot:jbcrypt:0.4                                   # BCrypt zum sicheren Hashen von Passwörtern
 ```
 
-## Projekt Struktur (23.11.2025)
+## Projekt Struktur [geupdated 23.11.2025]
 ```text
 server/
 ├── build.gradle.kts                      # Gradle-Konfiguration für den Server
