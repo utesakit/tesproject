@@ -30,78 +30,98 @@ Beim Registrierein/Einloggen erhält man JWT Access- und Refresh-Tokens, die man
 Die Gruppen-Endpunkte testest man über `group-test.http` im Ordner `test`.  
 Dort sind typische Operationen abgedeckt: Gruppen erstellen, per Einladungscode beitreten, Mitglieder entfernen, Gruppen verlassen und Gruppen löschen.
 
-## Project Structure as 23.11.2025 18:00
+
+## Dependencies
+```text
+dependencies/
+├── io.ktor:ktor-server-core-jvm:$ktorVersion                 # Basis-Ktor-APIs (Routing, Request/Response)
+├── io.ktor:ktor-server-netty-jvm:$ktorVersion                # Netty-Engine, um Ktor als HTTP-Server zu starten
+
+├── io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion  # JSON-Serialisierung in Ktor
+├── io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion  # Content-Negotiation (JSON rein/raus)
+├── org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3    # JSON (De-)Serialisierung für Kotlin-Datenklassen
+
+├── ch.qos.logback:logback-classic:1.5.6                      # Logging-Backend (Konsolen-/Dateilogs)
+
+├── org.ktorm:ktorm-core:$ktormVersion                        # Ktorm für SQL-Zugriffe in Kotlin
+├── org.postgresql:postgresql:$postgresDriverVersion          # PostgreSQL Treiber
+
+├── io.ktor:ktor-server-auth-jvm:$ktorVersion                 # Authentifizierungs-Support in Ktor
+├── io.ktor:ktor-server-auth-jwt-jvm:$ktorVersion             # JWT-Auth-Integration für Ktor
+├── com.auth0:java-jwt:4.4.0                                  # Erzeugen und Prüfen von JWTs
+
+└── org.mindrot:jbcrypt:0.4                                   # BCrypt zum sicheren Hashen von Passwörtern
+```
+
+## Projekt Struktur (23.11.2025)
 ```text
 server/
-├── build.gradle.kts                      # Gradle build config for the Ktor server module
-├── settings.gradle.kts                   # Gradle settings for the server module
-├── gradlew / gradlew.bat                 # Gradle wrapper scripts
+├── build.gradle.kts                      # Gradle-Konfiguration für den Server
+├── settings.gradle.kts                   # Gradle-Grundeinstellungen
+├── gradlew / gradlew.bat                 # Gradle-Startskripte (Linux/Mac / Windows)
 └── src/main/kotlin/com/tes
-    ├── Main.kt                           # Ktor server setup and main entry point
-    │                                     # - creates Database
-    │                                     # - wires repositories + services
-    │                                     # - registers auth, health, and group routes
+    ├── Main.kt                           # Startpunkt des Servers (startet Ktor & registriert alle Routen)
     │
-    ├── api                               # HTTP API layer (Ktor routes + DTOs)
+    ├── api                               # HTTP-Schnittstelle (Routen + Datenobjekte)
     │   ├── auth
-    │   │   ├── AuthRoutes.kt             # /auth/register, /auth/login, /auth/refresh endpoints
-    │   │   ├── AuthDtos.kt               # RegisterRequest, LoginRequest, UserResponse, AuthResponse, ...
-    │   │   └── JwtAuth.kt                # extractUserIdFromToken, requireAuthenticatedUserId (JWT helper)
+    │   │   ├── AuthRoutes.kt             # Endpoints: /auth/register, /auth/login, /auth/refresh
+    │   │   ├── AuthDtos.kt               # Datenklassen für Requests/Responses (Register, Login, User, Tokens)
+    │   │   └── JwtAuth.kt                # Hilfsfunktionen für JWT-Auslesen und -Prüfung
     │   │
     │   ├── groups
-    │   │   ├── GroupRoutes.kt            # /groups, /groups/join, /groups/{id}/leave, /groups/{id}/members/{memberId}
-    │   │   └── GroupDtos.kt              # CreateGroupRequest, JoinGroupRequest, GroupResponse, GroupsResponse
+    │   │   ├── GroupRoutes.kt            # Endpoints: /groups, /groups/join, /groups/{id}/leave, ...
+    │   │   └── GroupDtos.kt              # Datenklassen für Gruppen-Requests und -Responses
     │   │
     │   └── health
-    │       └── HealthRoutes.kt           # /health endpoint, returns status + uptime
+    │       └── HealthRoutes.kt           # Endpoint: /health (zeigt, ob der Server läuft)
     │
     ├── config
-    │   ├── DatabaseConfig.kt             # Creates Ktorm Database instance (PostgreSQL, local dev config)
-    │   └── DatabaseInitializer.kt        # Initializes/updates tables:
+    │   ├── DatabaseConfig.kt             # Verbindet sich mit PostgreSQL (Datenbank)
+    │   └── DatabaseInitializer.kt        # Legt Tabellen an / aktualisiert sie:
     │                                     #   - users
     │                                     #   - refresh_tokens
     │                                     #   - groups
     │                                     #   - group_members
     │
-    ├── data                              #  Repositories + Ktorm table mappings
+    ├── data                              # Zugriff auf die Datenbank (Repositorys + Tabellen)
     │   ├── auth
-    │   │   ├── RefreshTokenRepository.kt    # Repository interface for refresh tokens
-    │   │   ├── DbRefreshTokenRepository.kt  # Implementation using Ktorm + PostgreSQL
-    │   │   └── RefreshTokenTable.kt         # Ktorm table mapping for "refresh_tokens"
+    │   │   ├── RefreshTokenRepository.kt    # Schnittstelle für Refresh-Tokens
+    │   │   ├── DbRefreshTokenRepository.kt  # Umsetzung mit Ktorm + PostgreSQL
+    │   │   └── RefreshTokenTable.kt         # Tabellenbeschreibung "refresh_tokens"
     │   │
     │   ├── groups
-    │   │   ├── GroupsTable.kt            # Ktorm table mapping for "groups"
-    │   │   ├── GroupMembersTable.kt      # Ktorm table mapping for "group_members"
-    │   │   ├── GroupRepository.kt        # Repository interface for groups + memberships
-    │   │   ├── DbGroupRepository.kt      # Implementation using Ktorm + PostgreSQL
-    │   │   └── GroupMapper.kt            # Maps DB rows <=> Group / GroupMember (domain)
+    │   │   ├── GroupsTable.kt              # Tabellenbeschreibung "groups"
+    │   │   ├── GroupMembersTable.kt        # Tabellenbeschreibung "group_members"
+    │   │   ├── GroupRepository.kt          # Schnittstelle für Gruppen + Mitgliedschaften
+    │   │   ├── DbGroupRepository.kt        # Umsetzung mit Ktorm + PostgreSQL
+    │   │   └── GroupMapper.kt              # Wandelt DB-Zeilen in Group/GroupMember-Objekte um
     │   │
     │   └── user
-    │       ├── UsersTable.kt             # Ktorm table mapping for "users"
-    │       ├── UserRepository.kt         # Repository interface for user persistence
-    │       ├── DbUserRepository.kt       # Repository implementation using Ktorm + PostgreSQL
-    │       └── UserMapper.kt             # Maps DB rows <=> User (domain) <=> UserResponse (API)
+    │       ├── UsersTable.kt               # Tabellenbeschreibung "users"
+    │       ├── UserRepository.kt           # Schnittstelle für Benutzerzugriff
+    │       ├── DbUserRepository.kt         # Umsetzung mit Ktorm + PostgreSQL
+    │       └── UserMapper.kt               # Wandelt DB-Zeilen in User-Objekte und API-Antworten um
     │
-    └── domain                            # Business logic & domain models
+    └── domain                              # Fachlogik & Kernmodelle
         ├── auth
-        │   ├── AuthService.kt            # Registration, login, validation, token issuing
-        │   └── TokenService.kt           # JWT access/refresh token generation & verification
+        │   ├── AuthService.kt              # Registrierung, Login, Prüfen von Zugangsdaten, Tokens ausgeben
+        │   └── TokenService.kt             # Erstellen und Prüfen von JWT-Access- und Refresh-Tokens
         │
         ├── groups
-        │   ├── Group.kt                  # Domain models: Group, GroupMember
-        │   └── GroupService.kt           # Business logic: create/join/leave/delete groups, remove members
+        │   ├── Group.kt                    # Datenmodelle: Group und GroupMember
+        │   └── GroupService.kt             # Gruppenlogik: erstellen, beitreten, verlassen, löschen, Mitglieder entfernen
         │
         ├── health
-        │   ├── Health.kt                 # Health domain model
-        │   └── HealthService.kt          # Provides health status based on server uptime
+        │   ├── Health.kt                   # Datenmodell für den Gesundheitszustand des Servers
+        │   └── HealthService.kt            # Berechnet Status und Laufzeit des Servers
         │
         └── user
-            └── User.kt                   # Domain model for users
-            
+            └── User.kt                     # Datenmodell für Benutzer
+
 debian/
-└── Caddyfile                             # Example Caddy config (reverse proxy → Ktor backend)
+└── Caddyfile                              # Beispiel-Konfiguration für einen Reverse Proxy (Caddy → Ktor-Server)
 
 test/
-├── auth-test.http                        # HTTP client script for testing auth endpoints
-└── group-test.http                       # HTTP client script for testing group endpoints
+├── auth-test.http                         # Beispiel-HTTP-Requests zum Testen der Auth-API (Register/Login/JWT)
+└── group-test.http                        # Beispiel-HTTP-Requests zum Testen der Gruppen-API (erstellen, beitreten, etc.)
 ```
