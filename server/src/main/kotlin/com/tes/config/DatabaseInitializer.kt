@@ -3,15 +3,15 @@ package com.tes.config
 import org.ktorm.database.Database
 
 /**
- * Handles database schema initialization and migrations.
- * Ensures that all required tables exist on server startup.
+ * Initializes and updates the database schema used by the server.
+ * This object is called on server startup to make sure all required tables exist before any requests are handled.
  */
 object DatabaseInitializer {
 
     /**
-     * Initializes the database schema on server startup.
-     * Ensures that the "users" table exists.
-     * @param database the database connection to initialize
+     * Ensures that the database schema is present.
+     * Currently this creates the "users" table if it does not already exist.
+     * @param database Active database connection used to run the DDL statements.
      */
     fun initDatabase(database: Database) {
         database.useConnection { connection ->

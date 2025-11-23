@@ -1,18 +1,19 @@
 package com.tes
 
-import com.tes.api.authRoutes
-import com.tes.api.healthRoutes
+import com.tes.api.auth.authRoutes
+import com.tes.api.health.healthRoutes
 import com.tes.config.DatabaseConfig
 import com.tes.config.DatabaseInitializer
-import com.tes.data.DbUserRepository
-import com.tes.domain.AuthService
-import com.tes.domain.HealthService
-import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.routing.*
-import io.ktor.serialization.kotlinx.json.*
+import com.tes.data.shared.DbUserRepository
+import com.tes.domain.auth.AuthService
+import com.tes.domain.health.HealthService
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.routing.routing
 import kotlinx.serialization.json.Json
 import java.time.Instant
 
@@ -22,7 +23,9 @@ import java.time.Instant
 val serverStartTime: Instant = Instant.now()
 
 /**
- * Application entry point.
+ * Entry point of the server.
+ * Starts an embedded Ktor server using Netty on port 8080 and
+ * delegates the application configuration to the [module] function.
  */
 fun main() {
     embeddedServer(
@@ -36,10 +39,9 @@ fun main() {
 
 /**
  * Main Ktor application module.
- * Registers plugins, connects to the database and configures routes.
  */
 fun Application.module() {
-    // Install JSON content negotiation using kotlinx.serialization
+    // Configure JSON serialization and content negotiation
     install(ContentNegotiation) {
         json(
             Json {
@@ -52,12 +54,12 @@ fun Application.module() {
     val database = DatabaseConfig.createDatabase()
     DatabaseInitializer.initDatabase(database)
 
-    // Initialize repositories and services
+    // Create repositories and domain services
     val userRepository = DbUserRepository(database)
     val authService = AuthService(userRepository)
     val healthService = HealthService()
 
-    // Configure HTTP routes
+    // Register HTTP routes for the API
     routing {
         healthRoutes(healthService, serverStartTime)
         authRoutes(authService, userRepository)

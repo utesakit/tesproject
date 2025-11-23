@@ -1,10 +1,13 @@
-package com.tes.data
+package com.tes.data.shared
 
-import org.ktorm.schema.*
+import org.ktorm.schema.Table
+import org.ktorm.schema.int
+import org.ktorm.schema.varchar
 
 /**
- * Ktorm ORM mapping for the "users" table.
- * Column names must exactly match the CREATE TABLE definition.
+ * Ktorm mapping for the "users" database table.
+ * The column names must match the "CREATE TABLE users" definition exactly.
+ * This table is used by repositories to read and write user records.
  */
 object UsersTable : Table<Nothing>("users") {
 

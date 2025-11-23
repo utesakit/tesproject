@@ -1,4 +1,4 @@
-package com.tes.api
+package com.tes.api.auth
 
 import kotlinx.serialization.Serializable
 
@@ -14,7 +14,7 @@ data class RegisterRequest(
 )
 
 /**
- * Request body for user login.
+ * Request body for logging in an existing user.
  */
 @Serializable
 data class LoginRequest(
@@ -23,7 +23,8 @@ data class LoginRequest(
 )
 
 /**
- * Response sent back after a successful registration or user fetch.
+ * Response returned for successful registration or user lookup.
+ * Contains only public, non-sensitive user information.
  */
 @Serializable
 data class UserResponse(
@@ -34,9 +35,9 @@ data class UserResponse(
 )
 
 /**
- * Generic response with a simple message.
+ * Generic response wrapper containing a readable message.
  */
 @Serializable
 data class MessageResponse(
-    val message: String     // human-readable status / error message
+    val message: String     // (error) message
 )

@@ -1,17 +1,23 @@
-package com.tes.api
+package com.tes.api.auth
 
-import com.tes.data.UserMapper
-import com.tes.data.UserRepository
-import com.tes.domain.*
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import com.tes.data.shared.UserMapper
+import com.tes.data.shared.UserRepository
+import com.tes.domain.auth.AuthService
+import com.tes.domain.auth.AuthenticationException
+import com.tes.domain.auth.EmailAlreadyExistsException
+import com.tes.domain.auth.ValidationException
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.call
+import io.ktor.server.request.receive
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.post
 
 /**
- * HTTP routes for user authentication (registration and login).
- * Delegates business logic to AuthService.
+ * Registers HTTP routes for user authentication (registration and login).
+ * All business logic is delegated to [AuthService] and [UserRepository].
+ * @param authService Service used for validation and authentication.
+ * @param userRepository Repository used to store and load user data.
  */
 fun Route.authRoutes(authService: AuthService, userRepository: UserRepository) {
 
@@ -19,7 +25,7 @@ fun Route.authRoutes(authService: AuthService, userRepository: UserRepository) {
         try {
             val request = call.receive<RegisterRequest>()
 
-            // Validate registration data
+            // Validate basic registration data (names, email, password).
             authService.validateRegistration(
                 firstName = request.firstName,
                 lastName = request.lastName,
@@ -27,10 +33,10 @@ fun Route.authRoutes(authService: AuthService, userRepository: UserRepository) {
                 password = request.password
             )
 
-            // Check email availability
+            // Check that the email address is not already in use.
             authService.checkEmailAvailability(request.email)
 
-            // Create user (TODO: hash password before storing)
+            // Create user in the database. (TODO: hash password before storing)
             val user = userRepository.createUser(
                 firstName = request.firstName,
                 lastName = request.lastName,
@@ -38,6 +44,7 @@ fun Route.authRoutes(authService: AuthService, userRepository: UserRepository) {
                 passwordHash = request.password
             )
 
+            // Return the created user (without password) to the client.
             call.respond(
                 HttpStatusCode.Created,
                 UserMapper.toResponse(user)
@@ -65,9 +72,11 @@ fun Route.authRoutes(authService: AuthService, userRepository: UserRepository) {
         try {
             val request = call.receive<LoginRequest>()
 
-            // Authenticate user
+            // Authenticate user based on email and password.
             val user = authService.authenticate(request.email, request.password)
 
+            // For now just send a simple success message.
+            // TODO: Later this can return a JWT and user data.
             call.respond(
                 HttpStatusCode.OK,
                 MessageResponse("Login successful for ${user.email}.")

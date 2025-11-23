@@ -1,22 +1,23 @@
-package com.tes.domain
+package com.tes.domain.auth
 
-import com.tes.data.UserRepository
+import com.tes.data.shared.UserRepository
+import com.tes.domain.shared.User
 
 /**
- * Service layer responsible for authentication business logic.
- * Handles user registration and login validation.
+ * Provides authentication-related business logic.
+ * Handles validation of registration data, checks email availability and verifies user credentials during login.
  */
 class AuthService(
     private val userRepository: UserRepository
 ) {
 
     /**
-     * Validates registration request data.
-     * @param firstName user's first name
-     * @param lastName user's last name
-     * @param email user's email address
-     * @param password user's password
-     * @throws ValidationException if validation fails
+     * Validates the data of a registration request.
+     * @param firstName Users first name
+     * @param lastName Users last name
+     * @param email Users email address
+     * @param password Users password
+     * @throws ValidationException If any field is empty, the email is invalid or the password is too short.
      */
     fun validateRegistration(
         firstName: String,
@@ -38,9 +39,9 @@ class AuthService(
     }
 
     /**
-     * Checks if an email is already registered.
-     * @param email email to check
-     * @throws EmailAlreadyExistsException if email is already registered
+     * Checks whether the given email address is already in use.
+     * @param email Email address to check.
+     * @throws EmailAlreadyExistsException If a user with the given email already exists.
      */
     fun checkEmailAvailability(email: String) {
         val existing = userRepository.findByEmail(email)
@@ -51,10 +52,10 @@ class AuthService(
 
     /**
      * Authenticates a user with email and password.
-     * @param email user's email address
-     * @param password user's password
-     * @return the authenticated User
-     * @throws AuthenticationException if authentication fails
+     * @param email Users email address
+     * @param password Users password
+     * @return The authenticated [User] instance.
+     * @throws AuthenticationException If the email is unknown or the password is incorrect.
      */
     fun authenticate(email: String, password: String): User {
         val user = userRepository.findByEmail(email)
@@ -69,9 +70,9 @@ class AuthService(
     }
 
     /**
-     * Simple email validation (basic format check).
-     * @param email email to validate
-     * @return true if email format is valid
+     * Performs a very simple email format check.
+     * @param email Email address to validate.
+     * @return "true" if the email is valid, "false" otherwise.
      */
     private fun isValidEmail(email: String): Boolean {
         return email.contains("@") && email.contains(".") && email.length >= 5
@@ -79,17 +80,17 @@ class AuthService(
 }
 
 /**
- * Exception thrown when validation fails.
+ * Thrown when validation of user input fails.
  */
 class ValidationException(message: String) : Exception(message)
 
 /**
- * Exception thrown when email is already registered.
+ * Thrown when an email address is already associated with an existing user.
  */
 class EmailAlreadyExistsException(message: String) : Exception(message)
 
 /**
- * Exception thrown when authentication fails.
+ * Thrown when authentication of a user fails.
  */
 class AuthenticationException(message: String) : Exception(message)
 

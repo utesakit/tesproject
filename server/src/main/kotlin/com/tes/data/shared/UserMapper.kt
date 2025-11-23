@@ -1,18 +1,18 @@
-package com.tes.data
+package com.tes.data.shared
 
-import com.tes.api.UserResponse
-import com.tes.domain.User
+import com.tes.api.auth.UserResponse
+import com.tes.domain.shared.User
 import org.ktorm.dsl.QueryRowSet
 
 /**
- * Mapper for converting between domain models and DTOs/data structures.
+ * Maps between database rows, domain models, and API DTOs for users.
  */
 object UserMapper {
 
     /**
-     * Maps a database row to a User domain object.
-     * @param row the database query row
-     * @return the mapped User object
+     * Converts a database row into a [User] domain object.
+     * @param row Result row returned by Ktorm.
+     * @return The corresponding [User] instance.
      */
     fun fromRow(row: QueryRowSet): User {
         return User(
@@ -25,9 +25,9 @@ object UserMapper {
     }
 
     /**
-     * Maps a User domain object to a UserResponse DTO.
-     * @param user the domain User object
-     * @return the mapped UserResponse DTO
+     * Converts a [User] domain object into a [UserResponse] DTO that can be safely sent to the client.
+     * @param user Domain user that should be exposed via the API.
+     * @return A [UserResponse] containing only public user data.
      */
     fun toResponse(user: User): UserResponse {
         return UserResponse(
@@ -38,4 +38,3 @@ object UserMapper {
         )
     }
 }
-

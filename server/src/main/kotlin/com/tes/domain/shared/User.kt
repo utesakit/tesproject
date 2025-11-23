@@ -1,7 +1,8 @@
-package com.tes.domain
+package com.tes.domain.shared
 
 /**
- * Domain model representing a user that can register and log in.
+ * Represents a registered user.
+ * This domain model is used by the business logic.
  */
 data class User(
     val id: Int,              // database ID of the user
