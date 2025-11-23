@@ -1,4 +1,5 @@
-### Registrieren
+### Register a new user
+# Sends a registration request to the server.
 POST http://localhost:8080/auth/register
 Content-Type: application/json
 
@@ -9,11 +10,22 @@ Content-Type: application/json
   "password": "geheim123"
 }
 
-### Login
+### Log in with an existing user
+# Authenticates the user with email and password (expected to succeed).
 POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
   "email": "max@example.com",
   "password": "geheim123"
+}
+
+### Failed login attempt
+# Tries to log in with a wrong password (expected to return 401 Unauthorized).
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "email": "max@example.com",
+  "password": "wrongPassword123"
 }

@@ -1,10 +1,12 @@
-# change to your domain url
-
+# Public domain name (replace with your host name).
 example.com {
     encode gzip
 
-    reverse_proxy localhost:8080    # change to your internal adress & port
+# Forward all incoming requests to the Ktor backend.
+# Adjust the address and port to match your server.
+    reverse_proxy localhost:8080
 
+# Access log for incoming HTTP requests.
     log {
             output file /var/log/caddy/access.log
         }
