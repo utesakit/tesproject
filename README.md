@@ -51,6 +51,34 @@ dependencies/
 ├── com.auth0:java-jwt:4.4.0                                  # Erzeugen und Prüfen von JWTs
 
 └── org.mindrot:jbcrypt:0.4                                   # BCrypt zum sicheren Hashen von Passwörtern
+
+```
+
+## Datenbank-Tabellen [aktualisiert 23.11.2025]
+```text
+Es werden insgesamt 4 Tabellen verwendet:
+    - users             # speichert Benutzer
+    - refresh_tokens    # speichert Refresh-Tokens für JWT
+    - groups            # speichert Gruppen
+    - group_members     # Verknüpfungstabelle zwischen Benutzern und Gruppen
+
+Tabelle "users":
+    - id                SERIAL           Primary Key            # Eindeutige Benutzer-ID
+    - first_name        VARCHAR(100)     NOT NULL               # Vorname
+    - last_name         VARCHAR(100)     NOT NULL               # Nachname
+    - email             VARCHAR(255)     NOT NULL, UNIQUE       # E-Mail-Adresse (zum Login)
+    - password_hash     VARCHAR(255)     NOT NULL               # Gehashter Passwort-String (BCrypt)
+
+Tabelle "refresh_tokens":
+    - id        SERIAL          Primary Key                                      # Eindeutige ID des Refresh-Tokens
+    - user_id   INTEGER         NOT NULL, FK => users(id), ON DELETE CASCADE     # Referenz auf den Benutzer
+    - token     VARCHAR(500)    NOT NULL, UNIQUE                                 # Der eigentliche Refresh-Token-String
+    
+Tabelle "group_members":
+    - id        SERIAL         Primary Key                                        # Eindeutige ID der Mitgliedschaft
+    - group_id  INTEGER        NOT NULL, FK => groups(id), ON DELETE CASCADE      # Referenz auf die Gruppe
+    - user_id   INTEGER        NOT NULL, FK => users(id), ON DELETE CASCADE       # Referenz auf den Benutzer
+    
 ```
 
 ## Projekt Struktur [aktualisiert 23.11.2025]
@@ -124,4 +152,5 @@ debian/
 test/
 ├── auth-test.http                         # Beispiel-HTTP-Requests zum Testen der Auth-API (Register/Login/JWT)
 └── group-test.http                        # Beispiel-HTTP-Requests zum Testen der Gruppen-API (erstellen, beitreten, etc.)
+
 ```

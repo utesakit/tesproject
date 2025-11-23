@@ -13,6 +13,7 @@ val ktorVersion = "2.3.7"
 val ktormVersion = "4.0.0"
 val postgresDriverVersion = "42.7.4"
 
+// TODO: Security-Hinweise später genauer recherchieren!
 dependencies {
     // Ktor Server Dependencies
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
