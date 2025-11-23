@@ -18,7 +18,7 @@ Die Health-API kann man im Browser unter `http://localhost:8080/health` √ºberpr√
 
 Die Register-/Login-Endpoints kann man mithilfe der Datei `auth-test.http` im Ordner `test` in der IDE einer HTTP-POST-Requests testen.
 
-## Project Structure
+## Project Structure as 23.11.2025 18:00
 
 ```text
 server/
