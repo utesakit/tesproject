@@ -10,7 +10,6 @@ import org.ktorm.schema.varchar
  * This table is used by repositories to read and write user records.
  */
 object UsersTable : Table<Nothing>("users") {
-
     val id = int("id").primaryKey()             // primary key of the user
     val firstName = varchar("first_name")       // users first name
     val lastName = varchar("last_name")         // users last name
