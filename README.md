@@ -1,5 +1,23 @@
 # TES Project – Server (Kotlin + PostgreSQL)
 
+Damit der Server funktioniert muss eine PostgreSQL-Datenbank extern laufen.
+
+
+Anschließend sollte der Unterordner `server` als Gradle-Projekt in der IDE verknüpft werden.
+
+
+Den Server kann man dann entweder direkt in `Main.kt` über den grünen Pfeil am linken Rand bei `fun main()` starten oder im Terminal mit:
+
+```bash
+./gradlew run
+```
+
+Der Server läuft anschließend auf `http://localhost:8080`.
+
+Die Health-API kann man im Browser unter `http://localhost:8080/health` überprüfen.
+
+Die Register-/Login-Endpoints kann man mithilfe der Datei `auth-test.http` im Ordner `test` in der IDE einer HTTP-POST-Requests testen.
+
 ## Project Structure
 
 ```text
@@ -46,9 +64,10 @@ server/
         │
         └── user
             └── User.kt                  # Domain model for users
-            
+
 debian/
 └── Caddyfile                           # Example Caddy config (reverse proxy → Ktor backend)
 
 test/
 └── auth-test.http                      # HTTP client script for testing auth endpoints
+```
