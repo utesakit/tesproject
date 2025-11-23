@@ -10,7 +10,7 @@ import org.ktorm.dsl.select
 import org.ktorm.dsl.where
 
 /**
- * [RefreshTokenRepository] implementation using PostgreSQL database with Ktorm.
+ * [RefreshTokenRepository] implementation by a PostgreSQL database with Ktorm.
  * Manages refresh token storage and retrieval for JWT authentication.
  */
 class DbRefreshTokenRepository(
