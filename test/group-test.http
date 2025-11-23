@@ -1,0 +1,170 @@
+
+### GLOBAL VARIABLES – HIER TOKENS MANUELL EINTRAGEN
+
+@baseUrl = http://localhost:8080
+
+# After login, paste the accessToken of "Anna" here
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAiLCJzdWIiOiIxIiwiZW1haWwiOiJhbm5hQGV4YW1wbGUuY29tIiwidHlwZSI6ImFjY2VzcyIsImlhdCI6MTc2MzkyNzg0NiwiZXhwIjoxNzYzOTI4NzQ2fQ.89Wkw6jGbtPhkHMfiQS_oeJSaU5WfwsgpdpWkCOxHaM
+
+# After login, paste the accessToken of "Tom" here
+@memberToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAiLCJzdWIiOiIyIiwiZW1haWwiOiJ0b21AZXhhbXBsZS5jb20iLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzYzOTI3ODYzLCJleHAiOjE3NjM5Mjg3NjN9.yIG2hmJM5jKGT4IEWYuOy7jPuFUKgO_IJmuoweQOFyU
+
+
+
+
+
+### Register first user (Admin)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Anna",
+  "lastName": "Schmidt",
+  "email": "anna@example.com",
+  "password": "geheim123"
+}
+
+### Log in as first user (Admin)
+# After login, copy the "accessToken" from the response and paste it above into adminToken!
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "anna@example.com",
+  "password": "geheim123"
+}
+
+### Register second user (Member)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Tom",
+  "lastName": "Müller",
+  "email": "tom@example.com",
+  "password": "geheim123"
+}
+
+### Log in as second user (Member)
+# After login, copy the "accessToken" from the response and paste it above into memberToken!
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "tom@example.com",
+  "password": "geheim123"
+}
+
+
+
+
+
+### Create a new group (as Admin)
+POST {{baseUrl}}/groups
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "name": "Europaplatz WG"
+}
+
+### Create another group (as Admin)
+POST {{baseUrl}}/groups
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "name": "Italien-Urlaub 25"
+}
+
+### Get all groups for authenticated user (Admin)
+GET {{baseUrl}}/groups
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+### Join group with invitation code (as Member)
+# Replace "ABC123" with the real invitation code from the create-group response
+POST {{baseUrl}}/groups/join
+Content-Type: application/json
+Authorization: Bearer {{memberToken}}
+
+{
+  "invitationCode": "ABC123"
+}
+
+### Get all groups for member user
+GET {{baseUrl}}/groups
+Content-Type: application/json
+Authorization: Bearer {{memberToken}}
+
+### Remove member from group (as Admin)
+# Adjust {groupId} and {memberId}
+DELETE {{baseUrl}}/groups/1/members/2
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+### Leave group (as Member)
+# Adjust {groupId}
+POST {{baseUrl}}/groups/2/leave
+Content-Type: application/json
+Authorization: Bearer {{memberToken}}
+
+### Delete group (as Admin)
+# Adjust {groupId}
+DELETE {{baseUrl}}/groups/1
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+
+
+
+
+### Try to create group without authentication (negative)
+POST {{baseUrl}}/groups
+Content-Type: application/json
+
+{
+  "name": "Unauthorized Group"
+}
+
+### Try to join group with invalid invitation code (negative)
+POST {{baseUrl}}/groups/join
+Content-Type: application/json
+Authorization: Bearer {{memberToken}}
+
+{
+  "invitationCode": "777777"
+}
+
+### Try to delete group as non-admin (negative)
+DELETE {{baseUrl}}/groups/1
+Content-Type: application/json
+Authorization: Bearer {{memberToken}}
+
+### Try to leave group as admin (negative)
+POST {{baseUrl}}/groups/1/leave
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+### Try to remove member as non-admin (negative)
+DELETE {{baseUrl}}/groups/1/members/1
+Content-Type: application/json
+Authorization: Bearer {{memberToken}}
+
+### Try to create group with empty name (negative)
+POST {{baseUrl}}/groups
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "name": ""
+}
+
+### Try to join group with wrong invitation code length (negative)
+POST {{baseUrl}}/groups/join
+Content-Type: application/json
+Authorization: Bearer {{memberToken}}
+
+{
+  "invitationCode": "ABC"
+}

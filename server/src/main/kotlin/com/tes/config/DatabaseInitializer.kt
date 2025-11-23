@@ -47,6 +47,45 @@ object DatabaseInitializer {
                     ON refresh_tokens(user_id);
                     """.trimIndent()
                 )
+
+                // Create groups table if it does not exist yet
+                statement.executeUpdate(
+                    """
+                    CREATE TABLE IF NOT EXISTS groups (
+                        id              SERIAL PRIMARY KEY,
+                        name            VARCHAR(100) NOT NULL,
+                        invitation_code VARCHAR(6) UNIQUE NOT NULL,
+                        admin_id        INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE
+                    );
+                    """.trimIndent()
+                )
+
+                // Create group_members table if it does not exist yet
+                statement.executeUpdate(
+                    """
+                    CREATE TABLE IF NOT EXISTS group_members (
+                        id       SERIAL PRIMARY KEY,
+                        group_id INTEGER NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+                        user_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                        UNIQUE(group_id, user_id)
+                    );
+                    """.trimIndent()
+                )
+
+                // Create indexes for fast lookups
+                statement.executeUpdate(
+                    """
+                    CREATE INDEX IF NOT EXISTS idx_group_members_group_id 
+                    ON group_members(group_id);
+                    """.trimIndent()
+                )
+
+                statement.executeUpdate(
+                    """
+                    CREATE INDEX IF NOT EXISTS idx_group_members_user_id 
+                    ON group_members(user_id);
+                    """.trimIndent()
+                )
             }
         }
     }

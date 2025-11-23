@@ -1,13 +1,16 @@
 package com.tes
 
 import com.tes.api.auth.authRoutes
+import com.tes.api.groups.groupRoutes
 import com.tes.api.health.healthRoutes
 import com.tes.config.DatabaseConfig
 import com.tes.config.DatabaseInitializer
 import com.tes.data.auth.DbRefreshTokenRepository
+import com.tes.data.groups.DbGroupRepository
 import com.tes.data.user.DbUserRepository
 import com.tes.domain.auth.AuthService
 import com.tes.domain.auth.TokenService
+import com.tes.domain.groups.GroupService
 import com.tes.domain.health.HealthService
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
@@ -63,6 +66,7 @@ fun Application.module() {
     // Create repositories
     val userRepository = DbUserRepository(database)
     val refreshTokenRepository = DbRefreshTokenRepository(database)
+    val groupRepository = DbGroupRepository(database)
 
     // TokenService builds and verifies JWT tokens (access + refresh)
     val tokenService = TokenService(
@@ -77,6 +81,12 @@ fun Application.module() {
         refreshTokenRepository = refreshTokenRepository
     )
 
+    // GroupService provides business logic for group management
+    val groupService = GroupService(
+        groupRepository = groupRepository,
+        userRepository = userRepository
+    )
+
     // HealthService returns simple health status and uptime information
     val healthService = HealthService()
 
@@ -87,5 +97,8 @@ fun Application.module() {
 
         // auth endpoints: register, login, refresh token, etc.
         authRoutes(authService, userRepository)
+
+        // groups endpoints: create, join, leave, delete groups, manage members
+        groupRoutes(groupService, jwtSecret, jwtIssuer)
     }
 }
