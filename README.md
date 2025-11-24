@@ -75,6 +75,13 @@ Tabelle "refresh_tokens":
     - user_id   INTEGER         NOT NULL, FK => users(id), ON DELETE CASCADE     # Referenz auf den Benutzer
     - token     VARCHAR(500)    NOT NULL, UNIQUE                                 # Der eigentliche Refresh-Token-String
     
+Tabelle "groups":
+    - id                SERIAL           Primary Key                                    # Eindeutige Gruppen-ID
+    - name              VARCHAR(100)     NOT NULL                                       # Name der Gruppe
+    - invitation_code   VARCHAR(6)       NOT NULL, UNIQUE                               # Einladungs-/Beitrittscode der Gruppe
+    - admin_id          INTEGER          NOT NULL, FK => users(id), ON DELETE CASCADE   # Benutzer, der Admin der Gruppe ist
+ 
+    
 Tabelle "group_members":
     - id        SERIAL         Primary Key                                        # Eindeutige ID der Mitgliedschaft
     - group_id  INTEGER        NOT NULL, FK => groups(id), ON DELETE CASCADE      # Referenz auf die Gruppe
