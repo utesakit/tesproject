@@ -20,6 +20,10 @@ Content-Type: application/json
   "password": "geheim123"
 }
 
+
+
+
+
 ### Failed login attempt
 # Tries to log in with a wrong password (expected to return 401 Unauthorized).
 POST http://localhost:8080/auth/login

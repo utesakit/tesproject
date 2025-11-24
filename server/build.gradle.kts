@@ -48,7 +48,7 @@ dependencies {
 
 application {
     // Entry point for your Ktor application (generated ApplicationKt)
-    mainClass.set("com.tes.ApplicationKt")
+    mainClass.set("com.tes.MainKt")
 }
 
 tasks.test {

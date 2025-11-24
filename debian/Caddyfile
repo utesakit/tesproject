@@ -1,3 +1,4 @@
+
 # Public domain name (replace with your host name).
 example.com {
     encode gzip
