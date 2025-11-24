@@ -81,7 +81,6 @@ Tabelle "groups":
     - invitation_code   VARCHAR(6)       NOT NULL, UNIQUE                               # Beitrittscode der Gruppe
     - admin_id          INTEGER          NOT NULL, FK => users(id), ON DELETE CASCADE   # Benutzer, der Admin der Gruppe ist
  
-    
 Tabelle "group_members":
     - id        SERIAL         Primary Key                                        # Eindeutige ID der Mitgliedschaft
     - group_id  INTEGER        NOT NULL, FK => groups(id), ON DELETE CASCADE      # Referenz auf die Gruppe
