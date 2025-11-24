@@ -78,7 +78,7 @@ Tabelle "refresh_tokens":
 Tabelle "groups":
     - id                SERIAL           Primary Key                                    # Eindeutige Gruppen-ID
     - name              VARCHAR(100)     NOT NULL                                       # Name der Gruppe
-    - invitation_code   VARCHAR(6)       NOT NULL, UNIQUE                               # Einladungs-/Beitrittscode der Gruppe
+    - invitation_code   VARCHAR(6)       NOT NULL, UNIQUE                               # Beitrittscode der Gruppe
     - admin_id          INTEGER          NOT NULL, FK => users(id), ON DELETE CASCADE   # Benutzer, der Admin der Gruppe ist
  
     
