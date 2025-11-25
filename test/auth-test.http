@@ -1,3 +1,4 @@
+
 ### Register a new user
 # Sends a registration request to the server.
 POST http://localhost:8080/auth/register

@@ -1,13 +1,11 @@
 
-### GLOBAL VARIABLES – HIER TOKENS MANUELL EINTRAGEN
-
 @baseUrl = http://localhost:8080
 
 # After login, paste the accessToken of "Anna" here
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAiLCJzdWIiOiIxIiwiZW1haWwiOiJhbm5hQGV4YW1wbGUuY29tIiwidHlwZSI6ImFjY2VzcyIsImlhdCI6MTc2NDA5MDMzMywiZXhwIjoxNzY0MDkxMjMzfQ.GTjDFTm8ibP_SlK0MsNVrL9LhhnSMRRpscI4iDyF9BU
+@adminToken = PASTEHERE
 
 # After login, paste the accessToken of "Tom" here
-@memberToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAiLCJzdWIiOiIyIiwiZW1haWwiOiJ0b21AZXhhbXBsZS5jb20iLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzY0MDkwMzQ3LCJleHAiOjE3NjQwOTEyNDd9.I_e7o8ckcyL0Xkd_670jIzP9LNJQHxk3BiEJbX2vFw8
+@memberToken = PASTEHERE
 
 
 
@@ -83,7 +81,7 @@ Content-Type: application/json
 Authorization: Bearer {{adminToken}}
 
 ### Join group with invitation code (as Member)
-# Replace "ABC123" with the real invitation code from the create-group response
+# Replace "ABC123" with the real invitation code from the create-group response!
 POST {{baseUrl}}/groups/join
 Content-Type: application/json
 Authorization: Bearer {{memberToken}}
