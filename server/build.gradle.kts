@@ -22,7 +22,7 @@ val ktormVersion = "4.0.0"
 val postgresDriverVersion = "42.7.4"
 
 // All external libraries (dependencies) used by the server.
-// TODO: Security-Hinweise später genauer recherchieren!
+// TODO: Security-Hinweise später genauer anschauen!
 dependencies {
     // Core Ktor server APIs (routing, pipeline, plugins, ...).
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
