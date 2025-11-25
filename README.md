@@ -140,7 +140,8 @@ Alle Endpunkte hier sind **authentifiziert** (JWT im Header).
 
 ### 3.4 Externe API-Dokumentation (Swagger)
 
-Zusätzliche API-Beschreibung: __**https://app.swaggerhub.com/apis/germany-b19/TES1/1.0.0**__
+Zusätzliche API-Beschreibung:
+> __**https://app.swaggerhub.com/apis/germany-b19/TES1/1.0.0**__
 
 ---
 
@@ -153,6 +154,10 @@ test/
 ├── auth-test.http
 └── group-test.http
 ```
+
+> **Wichtig:**  
+> Die `.http`-Dateien enthalten feste Testdaten bzgl. IDs.  
+> **Vor jedem Testlauf** sollte die Datenbank geleert werden!
 
 ### 4.1 In IntelliJ IDEA
 
