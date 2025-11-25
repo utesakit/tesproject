@@ -1,13 +1,14 @@
-
-# Public domain name (replace with your host name).
+# TODO: Public domain name (replace this!)
 example.com {
+
+# Compress HTTP responses
     encode gzip
 
-# Forward all incoming requests to the Ktor backend.
-# Adjust the address and port to match your server.
+# Forward all incoming HTTP requests to the Ktor backend.
+# TODO: Change host/port here when the Ktor server runs somewhere else!
     reverse_proxy localhost:8080
 
-# Access log for incoming HTTP requests.
+# Write all incoming requests to an access log file.
     log {
             output file /var/log/caddy/access.log
         }
