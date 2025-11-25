@@ -187,23 +187,23 @@ Bei Gruppen-Requests musst du den `Authorization`-Header mit einem gültigen Acc
 Definiert in `server/build.gradle.kts`:
 
 ```text
-io.ktor:ktor-server-core-jvm:$ktorVersion                 # Basis-Ktor-APIs (Routing, Request/Response)
-io.ktor:ktor-server-netty-jvm:$ktorVersion                # Netty-Engine, um Ktor als HTTP-Server zu starten
+io.ktor:ktor-server-core-jvm                       # Basis-Ktor-APIs (Routing, Request/Response)
+io.ktor:ktor-server-netty-jvm                      # Netty-Engine, um Ktor als HTTP-Server zu starten
 
-io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion  # JSON-Serialisierung in Ktor
-io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion  # Content-Negotiation (JSON rein/raus)
-org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3    # JSON (De-)Serialisierung für Kotlin-Datenklassen
+io.ktor:ktor-serialization-kotlinx-json-jvm        # JSON-Serialisierung in Ktor
+io.ktor:ktor-server-content-negotiation-jvm        # Content-Negotiation (JSON rein/raus)
+org.jetbrains.kotlinx:kotlinx-serialization-json   # JSON (De-)Serialisierung für Kotlin-Datenklassen
 
-ch.qos.logback:logback-classic:1.5.6                      # Logging-Backend (Konsolen-/Dateilogs)
+ch.qos.logback:logback-classic                     # Logging-Backend (Konsolen-/Dateilogs)
 
-org.ktorm:ktorm-core:$ktormVersion                        # Ktorm für SQL-Zugriffe in Kotlin
-org.postgresql:postgresql:$postgresDriverVersion          # PostgreSQL Treiber
+org.ktorm:ktorm-core                               # Ktorm für SQL-Zugriffe in Kotlin
+org.postgresql:postgresql                          # PostgreSQL Treiber
 
-io.ktor:ktor-server-auth-jvm:$ktorVersion                 # Authentifizierungs-Support in Ktor
-io.ktor:ktor-server-auth-jwt-jvm:$ktorVersion             # JWT-Auth-Integration für Ktor
-com.auth0:java-jwt:4.4.0                                  # Erzeugen und Prüfen von JWTs
+io.ktor:ktor-server-auth-jvm                       # Authentifizierungs-Support in Ktor
+io.ktor:ktor-server-auth-jwt-jvm                   # JWT-Auth-Integration für Ktor
+com.auth0:java-jwt                                 # Erzeugen und Prüfen von JWTs
 
-org.mindrot:jbcrypt:0.4                                   # BCrypt zum sicheren Hashen von Passwörtern
+org.mindrot:jbcrypt                                # BCrypt zum sicheren Hashen von Passwörtern
 ```
 
 ---
