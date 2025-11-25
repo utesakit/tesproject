@@ -1,14 +1,19 @@
 package com.tes.domain.health
 
 /**
- * Service responsible for providing health information about the server.
+ * Service that creates [Health] objects for the health check endpoint.
+ *
+ * This class belongs to the domain layer and contains the simple
+ * business logic for representing the servers current health status.
+ * It does not know anything about HTTP or Ktor, it just returns plain data.
  */
 class HealthService {
 
     /**
-     * Builds the current health status of the server.
-     * @param uptime The server uptime in seconds since the process was started.
-     * @return A [Health] instance describing the current health state.
+     * Builds a [Health] object using the given uptime value.
+     *
+     * @param uptime Number of seconds the server has been running.
+     * @return A [Health] instance containing status, message and uptime information for the "/health" endpoint.
      */
     fun getHealth(uptime: Long): Health {
         return Health(

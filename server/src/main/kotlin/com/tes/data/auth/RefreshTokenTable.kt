@@ -5,12 +5,13 @@ import org.ktorm.schema.int
 import org.ktorm.schema.varchar
 
 /**
- * Ktorm mapping for the "refresh_tokens" database table.
- * Stores refresh tokens used for JWT token renewal.
- * Each token is associated with a user_id and contains a unique token string.
+ * Ktorm table definition for the "refresh_tokens" table.
+ *
+ * Each row in this table represents a single refresh token that belongs to a specific user.
+ * This mapping is used by the data layer to build type-safe SQL queries for storing and looking up refresh tokens.
  */
 object RefreshTokensTable : Table<Nothing>("refresh_tokens") {
-    val id = int("id").primaryKey()              // primary key of the refresh token
-    val userId = int("user_id")                  // foreign key to users table
-    val token = varchar("token")                 // unique refresh token string
+    val id = int("id").primaryKey()
+    val userId = int("user_id")
+    val token = varchar("token")
 }

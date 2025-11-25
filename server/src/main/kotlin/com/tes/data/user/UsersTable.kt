@@ -5,14 +5,15 @@ import org.ktorm.schema.int
 import org.ktorm.schema.varchar
 
 /**
- * Ktorm mapping for the "users" database table.
- * The column names must match the "CREATE TABLE users" definition exactly.
- * This table is used by repositories to read and write user records.
+ * Ktorm table definition for the "users" table.
+ *
+ * Each row in this table stores the basic account information for a single user.
+ * This mapping is used by the data layer to build type-safe SQL queries.
  */
 object UsersTable : Table<Nothing>("users") {
-    val id = int("id").primaryKey()             // primary key of the user
-    val firstName = varchar("first_name")       // users first name
-    val lastName = varchar("last_name")         // users last name
-    val email = varchar("email")                // users email address (unique)
-    val passwordHash = varchar("password_hash") // hashed user password (not yet)
+    val id = int("id").primaryKey()
+    val firstName = varchar("first_name")
+    val lastName = varchar("last_name")
+    val email = varchar("email")
+    val passwordHash = varchar("password_hash")
 }

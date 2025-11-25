@@ -1,18 +1,23 @@
 package com.tes.data.user
 
-import com.tes.api.auth.UserResponse
 import com.tes.domain.user.User
 import org.ktorm.dsl.QueryRowSet
 
 /**
- * Maps between database rows, domain models, and API DTOs for users.
+ * Helper for converting database rows into [User] domain objects.
+ *
+ * This mapper lives in the data layer and is used by [DbUserRepository].
+ * It centralises all column => field mapping logic in one place so that:
+ * - changes in the "users" table structure only need to be updated here and
+ * - the rest of the code can work with the domain [User] type instead of raw database rows.
  */
 object UserMapper {
 
     /**
-     * Converts a database row into a [User] domain object.
-     * @param row Result row returned by Ktorm.
-     * @return The corresponding [User] instance.
+     * Converts a database result row into a [User] domain object.
+     *
+     * @param row A single result row returned by a Ktorm query on [UsersTable].
+     * @return The corresponding [User] instance with all fields populated.
      */
     fun fromRow(row: QueryRowSet): User {
         return User(
@@ -21,20 +26,6 @@ object UserMapper {
             lastName = row[UsersTable.lastName]!!,
             email = row[UsersTable.email]!!,
             passwordHash = row[UsersTable.passwordHash]!!
-        )
-    }
-
-    /**
-     * Converts a [User] domain object into a [UserResponse] DTO that can be safely sent to the client.
-     * @param user Domain user that should be exposed via the API.
-     * @return A [UserResponse] containing only public user data.
-     */
-    fun toResponse(user: User): UserResponse {
-        return UserResponse(
-            id = user.id,
-            firstName = user.firstName,
-            lastName = user.lastName,
-            email = user.email
         )
     }
 }

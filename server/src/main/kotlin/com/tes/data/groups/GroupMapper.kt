@@ -5,14 +5,19 @@ import com.tes.domain.groups.GroupMember
 import org.ktorm.dsl.QueryRowSet
 
 /**
- * Maps between database rows and group domain models.
+ * Helper responsible for converting database rows into group-related domain objects.
+ *
+ * This mapper lives in the data layer and is used by the group repository implementation.
+ * It keeps all column => field mapping logic in one central place so
+ * that any change in the table structure only needs to be updated here.
  */
 object GroupMapper {
 
     /**
-     * Maps a database row to a [Group].
-     * @param row Ktorm query row.
-     * @return Corresponding [Group] instance.
+     * Converts a database row into a [Group] domain object.
+     *
+     * @param row Ktorm query row returned from a query on [GroupsTable].
+     * @return Corresponding [Group] instance with all fields populated.
      */
     fun fromRow(row: QueryRowSet): Group {
         return Group(
@@ -24,9 +29,10 @@ object GroupMapper {
     }
 
     /**
-     * Maps a database row to a [GroupMember].
-     * @param row Ktorm query row.
-     * @return Corresponding [GroupMember] instance.
+     * Converts a database row into a [GroupMember] domain object.
+     *
+     * @param row Ktorm query row returned from a query on [GroupMembersTable].
+     * @return Corresponding [GroupMember] instance with all fields populated.
      */
     fun memberFromRow(row: QueryRowSet): GroupMember {
         return GroupMember(
@@ -36,4 +42,3 @@ object GroupMapper {
         )
     }
 }
-

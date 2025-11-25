@@ -7,10 +7,30 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
 
 /**
- * Extracts the user ID from the JWT access token in the Authorization header.
- * @param jwtSecret JWT secret used for validation.
- * @param jwtIssuer JWT issuer used for validation.
- * @return User ID from the token, or null if the token is invalid.
+ * Utility functions for handling JWT-based authentication in Ktor routes.
+ *
+ * These helpers:
+ * - Read the "Authorization: Bearer <token>" header from an incoming HTTP request.
+ * - Validate the access tokens signature and basic claims (issuer, type).
+ * - Extract the authenticated uses ID from the tokens `subject claim.
+ *
+ * For routes that require authentication use [requireAuthenticatedUserId] to:
+ * - Abort the request with "401 Unauthorized" if the token is missing or invalid.
+ * - Obtain the ID of the currently authenticated user otherwise.
+ */
+
+/**
+ * Extracts the user ID from a JWT access token in the `Authorization` header.
+ *
+ * Expects an "Authorization: Bearer <token>" header.
+ * The token is verified using [jwtSecret] and [jwtIssuer] and must contain the claim "type = "access"".
+ * On success the user ID is read from the tokens subject field and parsed as [Int].
+ *
+ * @param call The current Ktor application call.
+ * @param jwtSecret Secret key used to verify the tokens signature.
+ * @param jwtIssuer Expected issuer of the token.
+ * @return The user ID from the tokes subject field or "null" if the header
+ *         is missing, invalid, or the subject is not a valid integer.
  */
 fun extractUserIdFromToken(
     call: io.ktor.server.application.ApplicationCall,
@@ -40,12 +60,18 @@ fun extractUserIdFromToken(
 }
 
 /**
- * Ensures the request contains a valid JWT access token and returns the user ID.
- * Responds with 401 if authentication fails.
- * @param jwtSecret JWT secret used for validation.
- * @param jwtIssuer JWT issuer used for validation.
- * @return Authenticated user ID.
- * @throws Exception If the token is missing or invalid.
+ * Ensures that the current request is authenticated and returns the user ID.
+ *
+ * Reads and validates the JWT access token from the "Authorization" header of [call] using [extractUserIdFromToken].
+ * If the token is missing or invalid, this function sends a "401 Unauthorized" response and
+ * throws an [Exception] to stop further processing.
+ *
+ * @param call The current Ktor application call.
+ * @param jwtSecret Secret key used to verify the tokens signature.
+ * @param jwtIssuer Name of the component that issued the token.
+ * @return The authenticated user ID.
+ *
+ * @throws Exception After a "401 Unauthorized" response if authentication fails.
  */
 suspend fun requireAuthenticatedUserId(
     call: io.ktor.server.application.ApplicationCall,
@@ -62,4 +88,3 @@ suspend fun requireAuthenticatedUserId(
         }
     return userId
 }
-

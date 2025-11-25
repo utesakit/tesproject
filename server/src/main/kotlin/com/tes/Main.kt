@@ -23,14 +23,16 @@ import kotlinx.serialization.json.Json
 import java.time.Instant
 
 /**
- * Stores the timestamp when the server process was started.
+ * Timestamp captured once when the server process starts.
+ *
+ * The health endpoint uses this value to calculate how long the server has been running (uptime in seconds).
  */
 val serverStartTime: Instant = Instant.now()
 
 /**
- * Entry point of the server.
- * Starts an embedded Ktor server using Netty on port 8080 and
- * delegates the application configuration to the [module] function.
+ * JVM entry point of the server application.
+ *
+ * Starts an embedded Netty HTTP server on port 8080 and delegates all application wiring to [Application.module].
  */
 fun main() {
     embeddedServer(
@@ -45,10 +47,17 @@ fun main() {
 
 
 /**
- * Main Ktor application module.
+ * Primary Ktor application module and composition root.
+ *
+ * This function is called by the embedded Netty server and is responsible for:
+ * - Installing Ktor plugins (e.g. JSON content negotiation).
+ * - Creating the database connection and initializing the schema.
+ * - Reading security-related configuration (JWT secret and issuer).
+ * - Constructing repositories and domain services (auth, groups, health).
+ * - Registering all HTTP routes that make up the REST API.
  */
 fun Application.module() {
-    // Configure JSON serialization and content negotiation
+    // Install JSON (kotlinx.serialization) for request and response bodies.
     install(ContentNegotiation) {
         json(
             Json {
@@ -57,20 +66,20 @@ fun Application.module() {
         )
     }
 
-    // Initialize database connection and schema
+    // Create the database connection and ensure that all required tables exist.
     val database = DatabaseConfig.createDatabase()
     DatabaseInitializer.initDatabase(database)
 
-    // JWT configuration TODO: in production use environment variables or config file!
+    // TODO: In production, secrets and issuer MUST come from environment variables / configuration file!
     val jwtSecret = System.getenv("JWT_SECRET") ?: "secret-jwt-key-change-in-production-min-32-chars"
     val jwtIssuer = System.getenv("JWT_ISSUER") ?: "http://localhost:8080"
 
-    // Create repositories
+    // Construct repository implementations (data layer).
     val userRepository = DbUserRepository(database)
     val refreshTokenRepository = DbRefreshTokenRepository(database)
     val groupRepository = DbGroupRepository(database)
 
-    // TokenService builds and verifies JWT tokens (access + refresh)
+    // TokenService is responsible for creating and validating JWT tokens (access & refresh tokens).
     val tokenService = TokenService(
         jwtSecret = jwtSecret,
         jwtIssuer = jwtIssuer
@@ -83,24 +92,24 @@ fun Application.module() {
         refreshTokenRepository = refreshTokenRepository
     )
 
-    // GroupService provides business logic for group management
+    // GroupService contains the business logic for creating and managing groups.
     val groupService = GroupService(
         groupRepository = groupRepository,
-        userRepository = userRepository
+        // userRepository = userRepository (siehe Groupservice.kt)
     )
 
-    // HealthService returns simple health status and uptime information
+    // HealthService builds a simple health response including server uptime.
     val healthService = HealthService()
 
-    // Register HTTP routes for the API
+    // Register all HTTP routes of the REST API.
     routing {
-        // health endpoint: returns status and uptime
+        // Health endpoint: returns status and uptime information.
         healthRoutes(healthService, serverStartTime)
 
-        // auth endpoints: register, login, refresh token, etc.
+        // Authentication endpoints: register, log in, refresh tokens
         authRoutes(authService, userRepository)
 
-        // groups endpoints: create, join, leave, delete groups, manage members
+        // Group endpoints: create, join, leave, delete groups, remove members
         groupRoutes(groupService, jwtSecret, jwtIssuer)
     }
 }

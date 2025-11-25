@@ -3,20 +3,28 @@ package com.tes.config
 import org.ktorm.database.Database
 
 /**
- * Initializes and updates the database schema used by the server.
- * This object is called on server startup to make sure all required tables exist before any requests are handled.
+ * Initializes the database schema on application startup.
+ *
+ * This object belongs to the infrastructure layer and is responsible for making sure that
+ * all required tables exist before the application starts andling requests.
+ *
+ * For each required table ("users", "refresh_tokens", "groups", "group_members")
+ * it runs a "CREATE TABLE IF NOT EXISTS" statement so the application can start even on an empty database.
  */
 object DatabaseInitializer {
 
     /**
-     * Ensures that the database schema is present.
-     * Creates the "users" and "refresh_tokens" tables if they do not already exist.
-     * @param database Active database connection used to run the DDL statements.
+     * Ensures all required database tables and indexes exist.
+     *
+     * This method is idempotent: running it multiple times is safe because
+     * "CREATE TABLE IF NOT EXISTS" and "CREATE INDEX IF NOT EXISTS" only create objects that are missing.
+     *
+     * @param database Ktorm [Database] used to obtain a JDBC connection.
      */
     fun initDatabase(database: Database) {
         database.useConnection { connection ->
             connection.createStatement().use { statement ->
-                // Create users table if it does not exist yet
+                // Users table: stores basic user account information.
                 statement.executeUpdate(
                     """
                     CREATE TABLE IF NOT EXISTS users (
@@ -29,7 +37,7 @@ object DatabaseInitializer {
                     """.trimIndent()
                 )
 
-                // Create refresh_tokens table if it does not exist yet
+                // Refresh tokens table: stores one or more refresh tokens per user.
                 statement.executeUpdate(
                     """
                     CREATE TABLE IF NOT EXISTS refresh_tokens (
@@ -40,7 +48,7 @@ object DatabaseInitializer {
                     """.trimIndent()
                 )
 
-                // Create index on user_id for fast lookups by user (TODO: not so important)
+                // Index for faster lookups of all tokens for a specific user. TODO: needed?
                 statement.executeUpdate(
                     """
                     CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id 
@@ -48,7 +56,7 @@ object DatabaseInitializer {
                     """.trimIndent()
                 )
 
-                // Create groups table if it does not exist yet
+                // Groups table: stores data for each group.
                 statement.executeUpdate(
                     """
                     CREATE TABLE IF NOT EXISTS groups (
@@ -60,7 +68,7 @@ object DatabaseInitializer {
                     """.trimIndent()
                 )
 
-                // Create group_members table if it does not exist yet
+                // Group members table: many-to-many relation between users and groups.
                 statement.executeUpdate(
                     """
                     CREATE TABLE IF NOT EXISTS group_members (
@@ -72,7 +80,7 @@ object DatabaseInitializer {
                     """.trimIndent()
                 )
 
-                // Create indexes for fast lookups
+                // Index for faster lookups by group. TODO: needed?
                 statement.executeUpdate(
                     """
                     CREATE INDEX IF NOT EXISTS idx_group_members_group_id 
@@ -80,6 +88,7 @@ object DatabaseInitializer {
                     """.trimIndent()
                 )
 
+                // Index for faster lookups by user. TODO: needed?
                 statement.executeUpdate(
                     """
                     CREATE INDEX IF NOT EXISTS idx_group_members_user_id 

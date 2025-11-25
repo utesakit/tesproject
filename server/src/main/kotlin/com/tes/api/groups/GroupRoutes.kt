@@ -6,7 +6,6 @@ import com.tes.domain.groups.GroupException
 import com.tes.domain.groups.GroupService
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
-import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
@@ -14,11 +13,35 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 
 /**
- * Registers HTTP routes for group management.
- * Delegates all business logic to [GroupService].
- * @param groupService Service for group operations.
- * @param jwtSecret JWT secret used for token validation.
- * @param jwtIssuer JWT issuer used for token validation.
+ * Defines all HTTP endpoints related to groups.
+ *
+ * Main operations:
+ * - Create a new group for the authenticated user.
+ * - List all groups a user is a member of.
+ * - Join a group using an invitation code.
+ * - Leave or delete a group.
+ * - Remove members from a group.
+ *
+ * This layer:
+ * - Uses [requireAuthenticatedUserId] to ensure the user is logged in.
+ * - Delegates business decisions to [GroupService].
+ * - Translates [GroupException] and generic errors into meaningful HTTP responses.
+ */
+
+/**
+ * Registers all group-related routes in the Ktor routing tree.
+ *
+ * Endpoints:
+ * - POST   /groups                                 → create a new group
+ * - POST   /groups/join                            → join a group via invitation code
+ * - GET    /groups                                 → list all groups of the current user
+ * - DELETE /groups/{groupId}                       → delete a group (admin only)
+ * - POST   /groups/{groupId}/leave                 → leave a group
+ * - DELETE /groups/{groupId}/members/{memberId}    → remove a member (admin only)
+ *
+ * @param groupService Business logic for creating and managing groups.
+ * @param jwtSecret Secret key used to validate JWT access tokens.
+ * @param jwtIssuer Expected issuer value in JWT tokens.
  */
 fun Route.groupRoutes(
     groupService: GroupService,
@@ -28,16 +51,17 @@ fun Route.groupRoutes(
 
     /**
      * POST /groups
-     * Creates a new group.
-     * The authenticated user becomes admin and member.
+     * Creates a new group. The authenticated user becomes admin and member.
      */
-    post("/groups") {
+    post<CreateGroupRequest>("/groups") { request ->
         try {
+            // Ensure the user is authenticated and get their user ID from the token.
             val userId = requireAuthenticatedUserId(call, jwtSecret, jwtIssuer)
-            val request = call.receive<CreateGroupRequest>()
 
+            // Ask the domain service to create the group.
             val group = groupService.createGroup(request.name, userId)
 
+            // Return the created group as JSON with HTTP 201 Created.
             call.respond(
                 HttpStatusCode.Created,
                 GroupResponse(
@@ -48,11 +72,13 @@ fun Route.groupRoutes(
                 )
             )
         } catch (e: GroupException) {
+            // Business rule violation.
             call.respond(
                 HttpStatusCode.BadRequest,
                 MessageResponse(e.message ?: "Error while creating group.")
             )
         } catch (e: Exception) {
+            // If requireAuthenticatedUserId already responded with 401, just stop.
             if (e.message == "Unauthorized") {
                 return@post
             }
@@ -68,10 +94,9 @@ fun Route.groupRoutes(
      * POST /groups/join
      * Lets the authenticated user join a group via invitation code.
      */
-    post("/groups/join") {
+    post<JoinGroupRequest>("/groups/join") { request ->
         try {
             val userId = requireAuthenticatedUserId(call, jwtSecret, jwtIssuer)
-            val request = call.receive<JoinGroupRequest>()
 
             val group = groupService.joinGroup(request.invitationCode, userId)
 
@@ -143,6 +168,8 @@ fun Route.groupRoutes(
     delete("/groups/{groupId}") {
         try {
             val userId = requireAuthenticatedUserId(call, jwtSecret, jwtIssuer)
+
+            // Parse and validate the path parameter "groupId".
             val groupId = call.parameters["groupId"]?.toIntOrNull()
                 ?: run {
                     call.respond(
@@ -152,6 +179,7 @@ fun Route.groupRoutes(
                     return@delete
                 }
 
+            // Ask the domain service to delete the group.
             groupService.deleteGroup(groupId, userId)
 
             call.respond(
@@ -178,10 +206,12 @@ fun Route.groupRoutes(
     /**
      * POST /groups/{groupId}/leave
      * Lets the authenticated user leave a group.
+     * TODO: "Cannot infer type for type parameter R" is only an IDEA-Error
      */
     post("/groups/{groupId}/leave") {
-        try {
+    try {
             val userId = requireAuthenticatedUserId(call, jwtSecret, jwtIssuer)
+
             val groupId = call.parameters["groupId"]?.toIntOrNull()
                 ?: run {
                     call.respond(
@@ -221,6 +251,7 @@ fun Route.groupRoutes(
     delete("/groups/{groupId}/members/{memberId}") {
         try {
             val adminUserId = requireAuthenticatedUserId(call, jwtSecret, jwtIssuer)
+
             val groupId = call.parameters["groupId"]?.toIntOrNull()
                 ?: run {
                     call.respond(
@@ -229,6 +260,7 @@ fun Route.groupRoutes(
                     )
                     return@delete
                 }
+
             val memberUserId = call.parameters["memberId"]?.toIntOrNull()
                 ?: run {
                     call.respond(
@@ -238,6 +270,7 @@ fun Route.groupRoutes(
                     return@delete
                 }
 
+            // Ask the domain service to remove the member (admin-only action).
             groupService.removeMember(groupId, memberUserId, adminUserId)
 
             call.respond(
@@ -261,4 +294,3 @@ fun Route.groupRoutes(
         }
     }
 }
-

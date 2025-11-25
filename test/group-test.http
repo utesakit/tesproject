@@ -4,10 +4,10 @@
 @baseUrl = http://localhost:8080
 
 # After login, paste the accessToken of "Anna" here
-@adminToken = PUT_IN_YOUR_TOKEN
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAiLCJzdWIiOiIxIiwiZW1haWwiOiJhbm5hQGV4YW1wbGUuY29tIiwidHlwZSI6ImFjY2VzcyIsImlhdCI6MTc2NDA5MDMzMywiZXhwIjoxNzY0MDkxMjMzfQ.GTjDFTm8ibP_SlK0MsNVrL9LhhnSMRRpscI4iDyF9BU
 
 # After login, paste the accessToken of "Tom" here
-@memberToken = PUT_IN_YOUR_TOKEN
+@memberToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAiLCJzdWIiOiIyIiwiZW1haWwiOiJ0b21AZXhhbXBsZS5jb20iLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzY0MDkwMzQ3LCJleHAiOjE3NjQwOTEyNDd9.I_e7o8ckcyL0Xkd_670jIzP9LNJQHxk3BiEJbX2vFw8
 
 
 

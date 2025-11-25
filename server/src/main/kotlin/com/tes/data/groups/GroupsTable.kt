@@ -5,23 +5,25 @@ import org.ktorm.schema.int
 import org.ktorm.schema.varchar
 
 /**
- * Ktorm mapping for the "groups" table.
- * Column names must match the CREATE TABLE definition.
+ * Ktorm table definition for the "groups" table.
+ *
+ * This mapping is used by the data layer to build type-safe SQL queries.
  */
 object GroupsTable : Table<Nothing>("groups") {
-    val id = int("id").primaryKey()                 // Group primary key
-    val name = varchar("name")                      // Group name
-    val invitationCode = varchar("invitation_code") // 6-char invitation code
-    val adminId = int("admin_id")                   // ID of the group creator (admin)
+    val id = int("id").primaryKey()
+    val name = varchar("name")
+    val invitationCode = varchar("invitation_code")
+    val adminId = int("admin_id")
 }
 
 /**
- * Ktorm mapping for the "group_members" table.
- * Stores user memberships in groups.
+ * Ktorm table definition for the "group_members" table.
+ *
+ * This table represents the many-to-many relationship between users and groups:
+ * each row links exactly one user to exactly one group.
  */
 object GroupMembersTable : Table<Nothing>("group_members") {
-    val id = int("id").primaryKey() // Membership primary key
-    val groupId = int("group_id")   // Group ID
-    val userId = int("user_id")     // User ID
+    val id = int("id").primaryKey()
+    val groupId = int("group_id")
+    val userId = int("user_id")
 }
-

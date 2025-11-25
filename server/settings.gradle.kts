@@ -1,2 +1,2 @@
-// Defines the name of the Gradle root project.
+// Gradle settings for the root project.
 rootProject.name = "server"
