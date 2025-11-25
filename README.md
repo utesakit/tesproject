@@ -1,5 +1,5 @@
 # TES Project – Server (Kotlin + PostgreSQL)
-- **README.md & Kommentare wurde automatisiert erstellt**
+- **README.md & Kommentare wurden automatisiert erstellt**
 ---
 
 ## 1. Voraussetzungen
@@ -140,8 +140,7 @@ Alle Endpunkte hier sind **authentifiziert** (JWT im Header).
 
 ### 3.4 Externe API-Dokumentation (Swagger)
 
-Zusätzliche API-Beschreibung:  
-`https://app.swaggerhub.com/apis/germany-b19/TES1/1.0.0`
+Zusätzliche API-Beschreibung: __**https://app.swaggerhub.com/apis/germany-b19/TES1/1.0.0**__
 
 ---
 
