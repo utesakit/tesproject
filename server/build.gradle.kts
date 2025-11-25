@@ -1,10 +1,10 @@
 // Gradle build configuration for the server.
 plugins {
     // Kotlin plugin for compiling Kotlin code
-    kotlin("jvm") version "2.0.21"
+    kotlin("jvm") version "2.2.21"                      // aktuellste Version
 
     // Kotlin plugin that enables @Serializable and JSON (de-)serialization support.
-    kotlin("plugin.serialization") version "2.0.21"
+    kotlin("plugin.serialization") version "2.2.21"     // identische Version wie oben (muss)
 
     // Gradle application plugin: lets us define an entry point (main class) and run the server via "gradle run".
     application
@@ -17,12 +17,15 @@ repositories {
 }
 
 // Centralized version definitions to keep dependency versions in one place.
-val ktorVersion = "2.3.7"
-val ktormVersion = "4.0.0"
-val postgresDriverVersion = "42.7.4"
+val ktorVersion = "2.3.13"                      // letzte 2.x-Version
+val ktormVersion = "4.1.1"                      // aktuellste Version
+val postgresDriverVersion = "42.7.8"            // aktuellste Version
+val kotlinxSerializationJsonVersion = "1.9.0"   // aktuellste Version
+val logbackVersion = "1.5.21"                   // aktuellste Version
+val javaJwtVersion = "4.5.0"                    // aktuellste Version
+val jbcryptVersion = "0.4"                      // aktuellste Version
 
 // All external libraries (dependencies) used by the server.
-// TODO: Security-Hinweise später genauer anschauen!
 dependencies {
     // Core Ktor server APIs (routing, pipeline, plugins, ...).
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
@@ -34,10 +37,10 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
 
     // Core JSON library for Kotlin serialization (explicit version).
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${kotlinxSerializationJsonVersion}")
 
     // Logback implementation for logging (INFO, DEBUG, ERROR, ...).
-    implementation("ch.qos.logback:logback-classic:1.5.6")
+    implementation("ch.qos.logback:logback-classic:${logbackVersion}")
 
     // Ktorm core: lightweight ORM/SQL mapping for working with the database.
     implementation("org.ktorm:ktorm-core:${ktormVersion}")
@@ -49,10 +52,10 @@ dependencies {
     // Ktor plugin for JWT-based authentication.
     implementation("io.ktor:ktor-server-auth-jwt-jvm:${ktorVersion}")
     // Java JWT library from Auth0: used by TokenService to create/verify tokens.
-    implementation("com.auth0:java-jwt:4.4.0")
+    implementation("com.auth0:java-jwt:${javaJwtVersion}")
 
     // BCrypt library for secure password hashing.
-    implementation("org.mindrot:jbcrypt:0.4")
+    implementation("org.mindrot:jbcrypt:${jbcryptVersion}")
 
     // Testing
     // testImplementation(kotlin("test"))
@@ -73,6 +76,6 @@ tasks.test {
 
 kotlin {
     // Configure Kotlin to target Java 21.
-    // This must match the JDK version used to build and run the project.
-    jvmToolchain(21)
+    // This must match the JDK version used to build and run the project!
+    jvmToolchain(21)                 // beste TLS Version für Kotlin 2.2.21
 }
