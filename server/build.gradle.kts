@@ -61,7 +61,7 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation("io.ktor:ktor-server-tests-jvm:${ktorVersion}")
     testImplementation("io.ktor:ktor-client-content-negotiation-jvm:${ktorVersion}")
-    testImplementation("io.ktor:ktor-serialization-kotlinx-json-jvm:${ktorVersion}")
+    // testImplementation("io.ktor:ktor-serialization-kotlinx-json-jvm:${ktorVersion}")
     // testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
 }
 
