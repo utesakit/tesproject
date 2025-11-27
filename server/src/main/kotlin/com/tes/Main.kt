@@ -44,8 +44,6 @@ fun main() {
     }.start(wait = true)
 }
 
-
-
 /**
  * Primary Ktor application module and composition root.
  *

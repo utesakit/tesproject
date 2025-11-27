@@ -13,12 +13,11 @@ class HealthService {
      * Builds a [Health] object using the given uptime value.
      *
      * @param uptime Number of seconds the server has been running.
-     * @return A [Health] instance containing status, message and uptime information for the "/health" endpoint.
+     * @return A [Health] instance containing status and uptime information for the "/health" endpoint.
      */
     fun getHealth(uptime: Long): Health {
         return Health(
-            status = "ok",
-            message = "Server is alive",
+            status = "UP",
             uptimeSeconds = uptime
         )
     }
